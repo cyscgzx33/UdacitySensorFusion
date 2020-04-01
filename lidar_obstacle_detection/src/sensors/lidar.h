@@ -8,7 +8,6 @@ const double pi = 3.1415;
 
 struct Ray
 {
-	
 	Vect3 origin;
 	double resolution;
 	Vect3 direction;
@@ -64,14 +63,11 @@ struct Ray
 			double rz = ((double) rand() / (RAND_MAX));
 			cloud->points.push_back(pcl::PointXYZ(castPosition.x+rx*sderr, castPosition.y+ry*sderr, castPosition.z+rz*sderr));
 		}
-			
 	}
-
 };
 
 struct Lidar
 {
-
 	std::vector<Ray> rays;
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
 	std::vector<Car> cars;

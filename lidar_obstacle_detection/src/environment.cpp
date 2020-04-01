@@ -10,7 +10,6 @@
 
 std::vector<Car> initHighway(bool renderScene, pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
-
     Car egoCar( Vect3(0,0,0), Vect3(4,2,2), Color(0,1,0), "egoCar");
     Car car1( Vect3(15,0,0), Vect3(4,2,2), Color(0,0,1), "car1");
     Car car2( Vect3(8,-4,0), Vect3(4,2,2), Color(0,0,1), "car2");	
@@ -40,22 +39,26 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
     // ----------------------------------------------------
     // -----Open 3D viewer and display simple highway -----
     // ----------------------------------------------------
-    
+
     // RENDER OPTIONS
     bool renderScene = true;
     std::vector<Car> cars = initHighway(renderScene, viewer);
-    
-    // TODO:: Create lidar sensor 
 
-    // TODO:: Create point processor
-  
+    // TODO (done): Create lidar sensor 
+    Lidar* lidar_sensor = new Lidar(cars, 0.0); // Note: The Lidar object should be created with a slope of 0
+                                                // It's on the horizontal plane
+
+    // TODO (done): Create point processor
+    typename pcl::PointCloud<pcl::PointXYZ>::Ptr lidar_point_clouds = lidar_sensor->scan(); // using typename is a good practice here
+                                                                                            // it claims the item following it is a type instead a value
+    renderRays(viewer, lidar_sensor->position, lidar_point_clouds); // (wrong) as the ego car origin is Vect3(0, 0, 0)
+                                                                    // fix: should be the lidar_sensor->position
 }
 
 
 //setAngle: SWITCH CAMERA ANGLE {XY, TopDown, Side, FPS}
 void initCamera(CameraAngle setAngle, pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
-
     viewer->setBackgroundColor (0, 0, 0);
     
     // set camera position and angle
