@@ -41,7 +41,7 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
     // ----------------------------------------------------
 
     // RENDER OPTIONS
-    bool renderScene = true;
+    bool renderScene = false; // if in the rendering scene we don't want to see any cars, check false here
     std::vector<Car> cars = initHighway(renderScene, viewer);
 
     // TODO (done): Create lidar sensor 
@@ -51,8 +51,11 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
     // TODO (done): Create point processor
     typename pcl::PointCloud<pcl::PointXYZ>::Ptr lidar_point_clouds = lidar_sensor->scan(); // using typename is a good practice here
                                                                                             // it claims the item following it is a type instead a value
-    renderRays(viewer, lidar_sensor->position, lidar_point_clouds); // (wrong) as the ego car origin is Vect3(0, 0, 0)
-                                                                    // fix: should be the lidar_sensor->position
+    // renderRays(viewer, lidar_sensor->position, lidar_point_clouds); // (wrong) as the ego car origin is Vect3(0, 0, 0)
+    //                                                                 // fix: should be the lidar_sensor->position
+    renderPointCloud(viewer, lidar_point_clouds, "lidar_point_clouds"); // default coler is Color(-1, -1, -1)
+                                                                        // here the string shows the name of this point clouds
+                                                                        // in case we have multiple clouds, we can use names to identify them
 }
 
 
@@ -60,12 +63,12 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
 void initCamera(CameraAngle setAngle, pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
     viewer->setBackgroundColor (0, 0, 0);
-    
+
     // set camera position and angle
     viewer->initCameraParameters();
     // distance away in meters
     int distance = 16;
-    
+
     switch(setAngle)
     {
         case XY : viewer->setCameraPosition(-distance, -distance, distance, 1, 1, 0); break;
