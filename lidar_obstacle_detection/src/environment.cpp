@@ -48,7 +48,7 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
     Lidar* lidar_sensor = new Lidar(cars, 0.0); // Note: The Lidar object should be created with a slope of 0
                                                 // It's on the horizontal plane
 
-    // TODO (done): Create point processor
+    // Render lidar point clouds
     typename pcl::PointCloud<pcl::PointXYZ>::Ptr lidar_point_clouds = lidar_sensor->scan(); // using typename is a good practice here
                                                                                             // it claims the item following it is a type instead a value
     // renderRays(viewer, lidar_sensor->position, lidar_point_clouds); // (wrong) as the ego car origin is Vect3(0, 0, 0)
@@ -56,6 +56,8 @@ void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
     renderPointCloud(viewer, lidar_point_clouds, "lidar_point_clouds"); // default coler is Color(-1, -1, -1)
                                                                         // here the string shows the name of this point clouds
                                                                         // in case we have multiple clouds, we can use names to identify them
+    // TODO (done): Create point processor
+    ProcessPointClouds<pcl::PointXYZ>* point_processor = new ProcessPointClouds<pcl::PointXYZ>{}; // must specify the typename on both sides (DON'T FORGET THE ONE AFTER `new`!)
 }
 
 
