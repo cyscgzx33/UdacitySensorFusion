@@ -16,8 +16,6 @@ list(REMOVE_ITEM PCL_LIBRARIES "vtkproj4")
 
 
 add_executable (quizRansac ransac2d.cpp ../../render/render.cpp)
+add_executable (RANSAC3D ransac3d.cpp ../../render/render.cpp)
 target_link_libraries (quizRansac ${PCL_LIBRARIES})
-
-
-
-
+target_link_libraries (RANSAC3D ${PCL_LIBRARIES})
