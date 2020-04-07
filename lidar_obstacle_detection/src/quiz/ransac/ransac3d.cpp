@@ -125,7 +125,7 @@ int main ()
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = CreateData3D();
 
 	// Rule of thumb of choosing max iteration: if having lower ratio of inliers, use a larger iteration number
-	std::unordered_set<int> inliers = Ransac3D(cloud, 64, 0.6);
+	std::unordered_set<int> inliers = Ransac3D(cloud, 100, 0.25);
 
 	pcl::PointCloud<pcl::PointXYZ>::Ptr  cloudInliers(new pcl::PointCloud<pcl::PointXYZ>());
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloudOutliers(new pcl::PointCloud<pcl::PointXYZ>());
