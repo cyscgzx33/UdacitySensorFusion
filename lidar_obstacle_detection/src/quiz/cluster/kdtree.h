@@ -78,10 +78,44 @@ struct KdTree
 			root = curr;
 	}
 
+	
+	void searchSubtree(Node* root,
+					   std::vector<float>& target, 
+					   float distanceTol, 
+					   int depth, 
+					   std::vector<int>& ids)
+	{
+		if (root == nullptr)
+			return;
+
+		// check if root belongs to the target BBOX
+		if ( fabs(root->point[0] - target[0]) < distanceTol &&
+			 fabs(root->point[1] - target[1]) < distanceTol )
+			ids.push_back(root->id);
+
+		// check next steps
+		if (depth % 2 == 0) // compare x
+		{
+			if (root->left && fabs(root->left->point[0] - target[0]) < distanceTol)
+				searchSubtree(root->left, target, distanceTol, depth + 1, ids);
+			if (root->right && fabs(root->right->point[0] - target[0]) < distanceTol)
+				searchSubtree(root->right, target, distanceTol, depth + 1, ids);
+		}
+		else // compare y
+		{
+			if (root->left && fabs(root->left->point[1] - target[1]) < distanceTol)
+				searchSubtree(root->left, target, distanceTol, depth + 1, ids);
+			if (root->right && fabs(root->right->point[1] - target[1]) < distanceTol)
+				searchSubtree(root->right, target, distanceTol, depth + 1, ids);
+		}
+	}
+
 	// return a list of point ids in the tree that are within distance of target
 	std::vector<int> search(std::vector<float> target, float distanceTol)
 	{
 		std::vector<int> ids;
+		// call the recursive helper function above
+		searchSubtree(root, target, distanceTol, 0, ids);
 		return ids;
 	}
 };
