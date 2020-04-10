@@ -5,6 +5,7 @@
 #include "../../render/box.h"
 #include <chrono>
 #include <string>
+#include <unordered_set>
 #include "kdtree.h"
 
 // Arguments:
@@ -40,13 +41,11 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr CreateData(std::vector<std::vector<float>> p
   	cloud->height = 1;
 
   	return cloud;
-
 }
 
 
 void render2DTree(Node* node, pcl::visualization::PCLVisualizer::Ptr& viewer, Box window, int& iteration, uint depth=0)
 {
-
 	if(node!=NULL)
 	{
 		Box upperWindow = window;
@@ -70,23 +69,56 @@ void render2DTree(Node* node, pcl::visualization::PCLVisualizer::Ptr& viewer, Bo
 		render2DTree(node->left,viewer, lowerWindow, iteration, depth+1);
 		render2DTree(node->right,viewer, upperWindow, iteration, depth+1);
 	}
-
 }
+
+void proximity(const std::vector<std::vector<float>>& points, 
+			   std::vector<int>& cluster,
+			   int id, float distanceTol,
+			   std::unordered_set<int>& visit,
+			   KdTree* tree)
+{
+	// mark the point as visited
+	visit.insert(id);
+
+	// add the point to cluster
+	cluster.push_back(id);
+
+	// obtain nearby points by querying the KD tree
+	std::vector<int> nearby_pt_ids = tree->search(points[id], distanceTol);
+
+	// iterate through and process each nearby point id
+	for (auto nearby_pt_id : nearby_pt_ids)
+	{
+		if (visit.count(nearby_pt_id) > 0)
+			continue;
+		proximity(points, cluster, nearby_pt_id, distanceTol, visit, tree); // should iterate with a center of current point or the initial center point????
+																			// ans: former choice
+	}
+}
+
 
 std::vector<std::vector<int>> euclideanCluster(const std::vector<std::vector<float>>& points, KdTree* tree, float distanceTol)
 {
-
-	// TODO: Fill out this function to return list of indices for each cluster
+	// TODO (done): Fill out this function to return list of indices for each cluster
 
 	std::vector<std::vector<int>> clusters;
- 
-	return clusters;
+	std::unordered_set<int> visit;            // store the visited ids of points
 
+	for (int i = 0; i < points.size(); i++)
+	{
+		auto point = points[i];
+		if (visit.count(i) > 0)
+			continue;
+		std::vector<int> cluster;             // stores ids of points belong to specific cluster
+		proximity(points, cluster, i, distanceTol, visit, tree);
+		clusters.push_back(cluster);
+	}
+
+	return clusters;
 }
 
 int main ()
 {
-
 	// Create viewer
 	Box window;
   	window.x_min = -10;
@@ -140,8 +172,5 @@ int main ()
   		renderPointCloud(viewer,cloud,"data");
 	
   	while (!viewer->wasStopped ())
-  	{
   	  viewer->spinOnce ();
-  	}
-  	
 }
