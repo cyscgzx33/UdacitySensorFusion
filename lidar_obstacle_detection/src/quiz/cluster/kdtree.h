@@ -79,34 +79,33 @@ struct KdTree
 	}
 
 	
-	void searchSubtree(Node* root,
+	void searchSubtree(Node* node,
 					   std::vector<float>& target, 
-					   float distanceTol, 
-					   int depth, 
+					   float distanceTol, int depth, 
 					   std::vector<int>& ids)
 	{
-		if (root == nullptr)
+		if (node == nullptr)
 			return;
 
-		// check if root belongs to the target BBOX
-		if ( fabs(root->point[0] - target[0]) < distanceTol &&
-			 fabs(root->point[1] - target[1]) < distanceTol )
-			ids.push_back(root->id);
+		// check if node belongs to the target BBOX
+		if ( fabs(node->point[0] - target[0]) < distanceTol &&
+			 fabs(node->point[1] - target[1]) < distanceTol )
+			ids.push_back(node->id);
 
 		// check next steps
 		if (depth % 2 == 0) // compare x
 		{
-			if (root->left && fabs(root->left->point[0] - target[0]) < distanceTol)
-				searchSubtree(root->left, target, distanceTol, depth + 1, ids);
-			if (root->right && fabs(root->right->point[0] - target[0]) < distanceTol)
-				searchSubtree(root->right, target, distanceTol, depth + 1, ids);
+			if (target[0] - distanceTol <= node->point[0]) // o----x----o , x is target, os are distanceTol ends (same below)
+				searchSubtree(node->left, target, distanceTol, depth + 1, ids);
+			if (target[0] + distanceTol >= node->point[0])
+				searchSubtree(node->right, target, distanceTol, depth + 1, ids);
 		}
 		else // compare y
 		{
-			if (root->left && fabs(root->left->point[1] - target[1]) < distanceTol)
-				searchSubtree(root->left, target, distanceTol, depth + 1, ids);
-			if (root->right && fabs(root->right->point[1] - target[1]) < distanceTol)
-				searchSubtree(root->right, target, distanceTol, depth + 1, ids);
+			if (target[1] - distanceTol <= node->point[1])
+				searchSubtree(node->left, target, distanceTol, depth + 1, ids);
+			if (target[1] + distanceTol >= node->point[1])
+				searchSubtree(node->right, target, distanceTol, depth + 1, ids);
 		}
 	}
 
