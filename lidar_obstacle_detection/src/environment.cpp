@@ -33,6 +33,17 @@ std::vector<Car> initHighway(bool renderScene, pcl::visualization::PCLVisualizer
     return cars;
 }
 
+void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer)
+{
+    // ----------------------------------------------------
+    // -------Open 3D viewer and display city block -------
+    // ----------------------------------------------------
+
+    ProcessPointClouds<pcl::PointXYZI>* point_process_intensity = new ProcessPointClouds<pcl::PointXYZI>();
+    // Note: for the data being loaded, the number of 0s will be used to stream back the pcd data
+    typename pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud = point_process_intensity->loadPcd("../src/sensors/data/pcd/data_1/0000000000.pcd");
+    renderPointCloud(viewer, input_cloud, "inputCloud");
+}
 
 void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
@@ -113,7 +124,13 @@ int main (int argc, char** argv)
     pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
     CameraAngle setAngle = XY;
     initCamera(setAngle, viewer);
-    simpleHighway(viewer);
+    
+    // simple high way scenario: fake lidar data 
+    // simpleHighway(viewer);
+
+    // city block scenario: real pcd lidar data
+    cityBlock(viewer);
+
 
     while (!viewer->wasStopped ())
     {
