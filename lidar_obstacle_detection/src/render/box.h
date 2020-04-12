@@ -2,6 +2,8 @@
 #define BOX_H
 #include <Eigen/Geometry> 
 
+// An advanced Box struct:
+// Aiming at rotation along Z axis using quaternion expression
 struct BoxQ
 {
 	Eigen::Vector3f bboxTransform;
@@ -10,6 +12,7 @@ struct BoxQ
     float cube_width;
     float cube_height;
 };
+
 struct Box
 {
 	float x_min;
