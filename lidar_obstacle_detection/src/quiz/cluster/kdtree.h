@@ -78,7 +78,7 @@ struct KdTree
 			root = curr;
 	}
 
-	
+
 	void searchSubtree(Node* node,
 					   std::vector<float>& target, 
 					   float distanceTol, int depth, 

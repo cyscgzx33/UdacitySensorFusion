@@ -47,7 +47,12 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer)
     // filter cloud using voxel
     typename pcl::PointCloud<pcl::PointXYZI>::Ptr clouds_filtered
         = point_process_intensity->FilterCloud(input_cloud, 0.1, Eigen::Vector4f(-20, -20, -20, 1.0), Eigen::Vector4f(20, 20, 20, 1.0));
-    renderPointCloud(viewer, clouds_filtered, "filteredCloud");
+    // renderPointCloud(viewer, clouds_filtered, "filteredCloud");
+
+    // segment cloud
+    std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr, pcl::PointCloud<pcl::PointXYZI>::Ptr> clouds_segmented = point_process_intensity->SegmentPlane(clouds_filtered, 100, 0.2);
+    renderPointCloud(viewer,clouds_segmented.first,  "obstacle_cloud", Color(1,0,0));
+    renderPointCloud(viewer,clouds_segmented.second, "plane_cloud",    Color(0,1,0));
 }
 
 void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
@@ -129,7 +134,7 @@ int main (int argc, char** argv)
     pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
     CameraAngle setAngle = XY;
     initCamera(setAngle, viewer);
-    
+
     // simple high way scenario: fake lidar data 
     // simpleHighway(viewer);
 
