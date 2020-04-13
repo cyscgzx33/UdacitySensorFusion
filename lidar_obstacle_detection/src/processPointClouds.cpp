@@ -95,7 +95,7 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
         plane_cloud->points.push_back(cloud->points[idx]);
 
     // Create the extract object
-    pcl::ExtractIndices<pcl::PointXYZ> extract;
+    typename pcl::ExtractIndices<PointT> extract;
 
     // Extract the inliers
     extract.setInputCloud(cloud);
