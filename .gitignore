@@ -43,7 +43,7 @@ devel_isolated/
 CMakeLists.txt.user
 
 srv/_*.py
-*.pcd
+# *.pcd # override for this project, as it only contains frames with limited size
 *.pyc
 qtcreator-*
 *.user
