@@ -28,22 +28,55 @@ typename pcl::PointCloud<PointT>::Ptr ProcessPointClouds<PointT>::FilterCloud(ty
 
     // TODO (done): Fill in the function to do voxel grid point reduction and region based filtering
     // Note: the input minPoint and maxPoint have format (x, y, z, 1.0)
+    //       given a box centered at the origin with size (max_pt.x - min_pt.x, max_pt.y - min_pt.y, max_pt.z - min_pt.z)
     // check reference: http://pointclouds.org/documentation/tutorials/voxel_grid.php
 
     typename pcl::PointCloud<PointT>::Ptr cloud_filtered (new pcl::PointCloud<PointT>()); // define a container to store filtered cloud
 
     // create the filtering object
-    typename pcl::VoxelGrid<PointT> sor; // Note: (wired: use VoxelGrid<PointT>, instead of 
-                                                          //               VoxelGrid<pcl::PointCloud<PointT>>, as the type)
+    typename pcl::VoxelGrid<PointT> sor; // Note: (wired) use VoxelGrid<PointT>, instead of 
+                                         //       VoxelGrid<pcl::PointCloud<PointT>>, as the type)
     sor.setInputCloud(cloud);
     sor.setLeafSize(filterRes, filterRes, filterRes); // we want to make it a cube with filterRes
     sor.filter(*cloud_filtered);
+
+    // filter out point clouds in a region
+    typename pcl::PointCloud<PointT>::Ptr cloud_region (new pcl::PointCloud<PointT>());
+
+    // create crop box object
+    // check reference: http://docs.pointclouds.org/trunk/classpcl_1_1_crop_box.html
+    typename pcl::CropBox<PointT> region(true);
+    region.setMin(minPoint);
+    region.setMax(maxPoint);
+    region.setInputCloud(cloud_filtered);
+    region.filter(*cloud_region);
+
+    // extra: roof points filtering out
+    std::vector<int> indices;
+
+    typename pcl::CropBox<PointT> roof(true);
+    roof.setMin(Eigen::Vector4f (-1.5, -1.7, -1, 1)); // fixed points
+    roof.setMax(Eigen::Vector4f (2.6, 1.7, -0.4, 1)); // fixed points
+    roof.setInputCloud(cloud_region);
+    roof.filter(indices);
+
+    typename pcl::PointIndices::Ptr inliers {new pcl::PointIndices};
+    for (int id: indices)
+        inliers->indices.push_back(id);
+
+    // very similar to segment point clouds function
+    typename pcl::ExtractIndices<PointT> extract;
+    extract.setInputCloud(cloud_region);
+    extract.setIndices(inliers);
+    extract.setNegative(true);
+    extract.filter(*cloud_region);
+
 
     auto endTime = std::chrono::steady_clock::now();
     auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
     std::cout << "filtering took " << elapsedTime.count() << " milliseconds" << std::endl;
 
-    return cloud_filtered;
+    return cloud_region;
 }
 
 

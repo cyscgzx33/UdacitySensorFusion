@@ -46,7 +46,7 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer)
 
     // filter cloud using voxel
     typename pcl::PointCloud<pcl::PointXYZI>::Ptr clouds_filtered
-        = point_process_intensity->FilterCloud(input_cloud, 0.1, Eigen::Vector4f(0.0, 0.0, 0.0, 1.0), Eigen::Vector4f(0.0, 0.0, 0.0, 1.0));
+        = point_process_intensity->FilterCloud(input_cloud, 0.1, Eigen::Vector4f(-20, -20, -20, 1.0), Eigen::Vector4f(20, 20, 20, 1.0));
     renderPointCloud(viewer, clouds_filtered, "filteredCloud");
 }
 
