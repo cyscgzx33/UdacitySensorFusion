@@ -42,7 +42,12 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer)
     ProcessPointClouds<pcl::PointXYZI>* point_process_intensity = new ProcessPointClouds<pcl::PointXYZI>();
     // Note: for the data being loaded, the number of 0s will be used to stream back the pcd data
     typename pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud = point_process_intensity->loadPcd("../src/sensors/data/pcd/data_1/0000000000.pcd");
-    renderPointCloud(viewer, input_cloud, "inputCloud");
+    // renderPointCloud(viewer, input_cloud, "inputCloud");
+
+    // filter cloud using voxel
+    typename pcl::PointCloud<pcl::PointXYZI>::Ptr clouds_filtered
+        = point_process_intensity->FilterCloud(input_cloud, 0.1, Eigen::Vector4f(0.0, 0.0, 0.0, 1.0), Eigen::Vector4f(0.0, 0.0, 0.0, 1.0));
+    renderPointCloud(viewer, clouds_filtered, "filteredCloud");
 }
 
 void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
