@@ -97,7 +97,7 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer)
 
     // cluster the obstacle cloud & render BBOX for clusters
     std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> cloud_clusters =
-        point_process_intensity->Clustering(clouds_segmented.first, 0.75, 60, 1500); // tuning the min & max sizes for correctly clustering objects
+        point_process_intensity->Clustering(clouds_segmented.first, 0.6, 60, 2000); // tuning the min & max sizes for correctly clustering objects
 
     int cluster_id = 0;
     std::vector<Color> colors = {Color(1, 0, 0), Color(1, 1, 0), Color(0, 0, 1)};
