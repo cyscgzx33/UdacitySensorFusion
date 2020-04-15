@@ -1,9 +1,16 @@
 # UdacitySensorFusion
 Course metrials and projects of Udacity Sensor Fusion Nanodegree Program.
-
+<br />
+<img src="lidar_obstacle_detection/media/ObstacleDetectionFPS.gif" width="700" height="400" />
 ## Lidar Obstacle Detection
+
+
 * Contained in the folder [lidar_obstacle_detection](lidar_obstacle_detection/)
 * Implemented a 3D lidar object detection, which contains several classical algoirthm:
+    * Raw Lidar Point Clouds rendering:
+    
+    * Processed result rendering:
+    
     * Lidar point clouds **segmentation** using the [RANSAC](lidar_obstacle_detection/src/quiz/ransac/) technique ([Wiki page](https://en.wikipedia.org/wiki/Random_sample_consensus))
     * Lidar point clouds **clustering** using [kd-tree](lidar_obstacle_detection/src/quiz/cluster/) algorithm ([Wiki page](https://en.wikipedia.org/wiki/K-d_tree))
 
