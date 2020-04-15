@@ -45,32 +45,32 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer,
     // filter cloud using voxel
     typename pcl::PointCloud<pcl::PointXYZI>::Ptr clouds_filtered
         = point_processor_intensity->FilterCloud(input_cloud_intensity, 0.1, Eigen::Vector4f(-25, -5, -3, 1.0), Eigen::Vector4f(25, 6.5, 3, 1.0)); // tuned for truncating points outside of the street
-    // renderPointCloud(viewer, clouds_filtered, "filteredCloud");
+    renderPointCloud(viewer, clouds_filtered, "filteredCloud");
 
-    // segment cloud
-    std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr, pcl::PointCloud<pcl::PointXYZI>::Ptr> clouds_segmented = point_processor_intensity->SegmentPlane(clouds_filtered, 100, 0.2);
-    renderPointCloud(viewer,clouds_segmented.first,  "obstacle_cloud", Color(1,0,0));
-    renderPointCloud(viewer,clouds_segmented.second, "plane_cloud",    Color(0,1,0));
+    // // segment cloud
+    // std::pair<pcl::PointCloud<pcl::PointXYZI>::Ptr, pcl::PointCloud<pcl::PointXYZI>::Ptr> clouds_segmented = point_processor_intensity->SegmentPlane(clouds_filtered, 100, 0.2);
+    // renderPointCloud(viewer,clouds_segmented.first,  "obstacle_cloud", Color(1,0,0));
+    // renderPointCloud(viewer,clouds_segmented.second, "plane_cloud",    Color(0,1,0));
 
-    // cluster the obstacle cloud & render BBOX for clusters
-    std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> cloud_clusters =
-        point_processor_intensity->Clustering(clouds_segmented.first, 0.6, 60, 2000); // tuning the min & max sizes for correctly clustering objects
+    // // cluster the obstacle cloud & render BBOX for clusters
+    // std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> cloud_clusters =
+    //     point_processor_intensity->Clustering(clouds_segmented.first, 0.6, 60, 2000); // tuning the min & max sizes for correctly clustering objects
 
-    int cluster_id = 0;
-    std::vector<Color> colors = {Color(1, 0, 0), Color(1, 1, 0), Color(0, 0, 1)};
+    // int cluster_id = 0;
+    // std::vector<Color> colors = {Color(1, 0, 0), Color(1, 1, 0), Color(0, 0, 1)};
 
-    for (pcl::PointCloud<pcl::PointXYZI>::Ptr cluster : cloud_clusters)
-    {
-        std::cout << "Cluster size ";
-        point_processor_intensity->numPoints(cluster);
-        renderPointCloud(viewer, cluster, "obstacle_cloud" + std::to_string(cluster_id), colors[cluster_id % colors.size()]);
+    // for (pcl::PointCloud<pcl::PointXYZI>::Ptr cluster : cloud_clusters)
+    // {
+    //     std::cout << "Cluster size ";
+    //     point_processor_intensity->numPoints(cluster);
+    //     renderPointCloud(viewer, cluster, "obstacle_cloud" + std::to_string(cluster_id), colors[cluster_id % colors.size()]);
 
-        // render bounding boxes to clustered points
-        Box box = point_processor_intensity->BoundingBox(cluster);
-        renderBox(viewer, box, cluster_id);
+    //     // render bounding boxes to clustered points
+    //     Box box = point_processor_intensity->BoundingBox(cluster);
+    //     renderBox(viewer, box, cluster_id);
 
-        cluster_id++;
-    }
+    //     cluster_id++;
+    // }
 }
 
 // Single PCD frame processing version
