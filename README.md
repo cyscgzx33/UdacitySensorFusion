@@ -1,8 +1,8 @@
 # UdacitySensorFusion
 Course metrials and projects of Udacity Sensor Fusion Nanodegree Program.
 <br />
-<img src="lidar_obstacle_detection/media/process-lidar-raw.gif" width="490" height="280" />
-<img src="lidar_obstacle_detection/media/process-lidar-bbox.gif" width="490" height="280" />
+<img src="lidar_obstacle_detection/media/process-lidar-raw.gif" width="420" height="240" />
+<img src="lidar_obstacle_detection/media/process-lidar-bbox.gif" width="420" height="240" />
 
 ## Lidar Obstacle Detection
 
