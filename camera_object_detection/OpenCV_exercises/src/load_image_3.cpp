@@ -15,6 +15,8 @@ void loadImage3()
     {
         // create file name
         ostringstream imgNumber;                   // #include <sstream>
+        // Yusen's Note: setfill() and setw() are stream manipulator methods, basically setting up some default length and bits
+        // Check this exmaple for ref: https://www.geeksforgeeks.org/iomanip-setfill-function-in-c-with-examples/
         imgNumber << setfill('0') << setw(4) << i; // #include <iomanip>
         string filename = "../images/img" + imgNumber.str() + ".jpg";
 
@@ -30,7 +32,9 @@ void loadImage3()
     for (auto it = imgList.begin(); it != imgList.end(); ++it)
     {
 
-        // STUDENT TASK : Prevent image 7 from being displayed
+        // STUDENT TASK (done) : Prevent image 7 from being displayed
+        if (it == imgList.begin() + + 2) // use the itor as reference
+            continue;
 
         // display image
         cv::imshow(windowName, *it);
