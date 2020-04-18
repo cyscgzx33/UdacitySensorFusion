@@ -13,7 +13,7 @@ void createMatrix1()
     m1_8u.create(nrows, ncols, CV_8UC1); // two-channel matrix with 8bit unsigned elements
     m1_8u.setTo(cv::Scalar(255));        // white
 
-    // STUDENT TASK :
+    // STUDENT TASK (done):
     // Create a variable of type cv::Mat* named m3_8u which has three channels with a
     // depth of 8bit per channel. Then, set the first channel to 255 and display the result.
     cv::Mat m3_8u;
@@ -24,14 +24,14 @@ void createMatrix1()
     string windowName = "First steps in OpenCV (m1_8u)";
     cv::namedWindow(windowName, 1); // create window
     cv::imshow(windowName, m1_8u);
-    cv::waitKey(0); // wait for keyboard input '0' before continuing
+    cv::waitKey(0); // wait for keyboard input (any input) before continuing
 
-    // STUDENT TASK :
+    // STUDENT TASK (done):
     // Display the results from the STUDENT TASK above
     string windowName_m3_8u = "First steps in OpenCV (m3_8u)";
     cv::namedWindow(windowName_m3_8u, 1); // create window
     cv::imshow(windowName_m3_8u, m3_8u);
-    cv::waitKey(0); // wait for keyboard input '0' before continuing
+    cv::waitKey(0); // wait for keyboard input (any input) before continuing
 }
 
 
