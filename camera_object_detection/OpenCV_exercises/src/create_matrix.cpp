@@ -16,6 +16,9 @@ void createMatrix1()
     // STUDENT TASK (done):
     // Create a variable of type cv::Mat* named m3_8u which has three channels with a
     // depth of 8bit per channel. Then, set the first channel to 255 and display the result.
+    // Yusen's Note: here's the naming system from opencv doc: https://docs.opencv.org/4.1.0/d6/d6d/tutorial_mat_the_basic_image_container.html
+    // CV_[The number of bits per item][Signed or Unsigned][Type Prefix]C[The channel number]
+    // For instance, CV_8UC3 means we use unsigned char types that are 8 bit long and each pixel has three of these to form the three channels. 
     cv::Mat m3_8u;
     m3_8u.create(nrows, ncols, CV_8UC3);
     m3_8u.setTo(cv::Scalar(255, 0, 0));  // set 3 dims
