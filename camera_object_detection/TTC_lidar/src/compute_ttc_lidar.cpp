@@ -19,11 +19,21 @@ void computeTTCLidar(std::vector<LidarPoint> &lidarPointsPrev,
     double minXPrev = 1e9, minXCurr = 1e9;
     for (auto it = lidarPointsPrev.begin(); it != lidarPointsPrev.end(); ++it)
     {
+        // Extended a rule based filter: 
+        // Only considering Lidar points within a narrow corridor in ego lane
+        if (it->y > laneWidth / 2.0 || it->y < -laneWidth / 2.0)
+            continue;
+
         minXPrev = minXPrev > it->x ? it->x : minXPrev;
     }
 
     for (auto it = lidarPointsCurr.begin(); it != lidarPointsCurr.end(); ++it)
     {
+        // Extended a rule based filter: 
+        // Only considering Lidar points within a narrow corridor in ego lane
+        if (it->y > laneWidth / 2.0 || it->y < -laneWidth / 2.0)
+            continue;
+
         minXCurr = minXCurr > it->x ? it->x : minXCurr;
     }
 
