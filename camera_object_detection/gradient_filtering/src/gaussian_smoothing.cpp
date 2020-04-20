@@ -18,7 +18,7 @@ void gaussianSmoothing1()
                             7, 26, 41, 26, 7,
                             4, 16, 26, 16, 4,
                             1, 4, 7, 4, 1};
-    cv::Mat kernel = cv::Mat(5, 5, CV_32F, gauss_data);
+    cv::Mat kernel = cv::Mat(5, 5, CV_32F, gauss_data) / (float)273.0; // fix: must normalize the kernel, so we have to divide 273 
 
     // apply filter
     cv::Mat result;
