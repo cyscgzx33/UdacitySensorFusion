@@ -1,6 +1,7 @@
 #include <iostream>
 #include <numeric>
 #include <opencv2/core.hpp>
+#include <queue> // for priority_queue
 
 
 #include "dataStructures.h"
@@ -56,7 +57,56 @@ void computeTTCCamera(std::vector<cv::KeyPoint> &kptsPrev, std::vector<cv::KeyPo
     double dT = 1 / frameRate;
     TTC = -dT / (1 - meanDistRatio);
 
+    // STUDENT TASK (replacement for meanDistRatio, done)
+    priority_queue<double> pq; // max heap, the top() is largest
+    int n_ratio = distRatios.size();
+    int n_thres = n_ratio / 2 + 1;
+    for (auto ratio : distRatios)
+    {
+        if (pq.size() > n_thres)
+        {
+            if (pq.top() > ratio)
+            {
+                pq.pop();
+                pq.push(ratio);
+            }
+        }
+        else
+            pq.push(ratio);
+    }
+
+    double medianDistRatio;
+    if (n_ratio == 0)
+        medianDistRatio = 0.0;
+    else if (n_ratio % 2 == 1)
+        medianDistRatio = pq.top();
+    else
+    {
+        medianDistRatio += pq.top();
+        pq.pop();
+        medianDistRatio += pq.top();
+        medianDistRatio /= 2.0;
+    }
+
+    dT = 1 / frameRate;
+    TTC = -dT / (1 - medianDistRatio);
+
+    // Another version (solution)
     // STUDENT TASK (replacement for meanDistRatio)
+    // std::sort(distRatios.begin(), distRatios.end());
+    // long medIndex = floor(distRatios.size() / 2.0);
+    // double medDistRatio = distRatios.size() % 2 == 0 ? (distRatios[medIndex - 1] + distRatios[medIndex]) / 2.0 : distRatios[medIndex]; // compute median dist. ratio to remove outlier influence
+
+    // dT = 1 / frameRate;
+    // TTC = -dT / (1 - medDistRatio);
+    // EOF STUDENT TASK
+
+    // compare the results
+    // cout << "n_ratio = " << n_ratio << endl;
+    // cout << "medDistRatio = " << medDistRatio << ", medianDistRatio = " << medianDistRatio << endl;
+    // cout << "distRatios[1506] = " << distRatios[1506] << ", " << ", distRatios[1507]" << distRatios[1507] << ", distRatios[1508]" << distRatios[1508] << ", distRatios[1509]" << distRatios[1509] << endl;
+    // cout << ", distRatios[1407]" << distRatios[1407] << endl;
+    // cout << "pq.size() = " << pq.size() << endl;
 }
 
 int main()
