@@ -93,20 +93,22 @@ void computeTTCCamera(std::vector<cv::KeyPoint> &kptsPrev, std::vector<cv::KeyPo
 
     // Another version (solution)
     // STUDENT TASK (replacement for meanDistRatio)
-    // std::sort(distRatios.begin(), distRatios.end());
-    // long medIndex = floor(distRatios.size() / 2.0);
-    // double medDistRatio = distRatios.size() % 2 == 0 ? (distRatios[medIndex - 1] + distRatios[medIndex]) / 2.0 : distRatios[medIndex]; // compute median dist. ratio to remove outlier influence
+    std::sort(distRatios.begin(), distRatios.end());
+    long medIndex = floor(distRatios.size() / 2.0);
+    double medDistRatio = distRatios.size() % 2 == 0 ? (distRatios[medIndex - 1] + distRatios[medIndex]) / 2.0 : distRatios[medIndex]; // compute median dist. ratio to remove outlier influence
 
-    // dT = 1 / frameRate;
-    // TTC = -dT / (1 - medDistRatio);
+    dT = 1 / frameRate;
+    TTC = -dT / (1 - medDistRatio);
     // EOF STUDENT TASK
 
     // compare the results
-    // cout << "n_ratio = " << n_ratio << endl;
-    // cout << "medDistRatio = " << medDistRatio << ", medianDistRatio = " << medianDistRatio << endl;
-    // cout << "distRatios[1506] = " << distRatios[1506] << ", " << ", distRatios[1507]" << distRatios[1507] << ", distRatios[1508]" << distRatios[1508] << ", distRatios[1509]" << distRatios[1509] << endl;
-    // cout << ", distRatios[1407]" << distRatios[1407] << endl;
-    // cout << "pq.size() = " << pq.size() << endl;
+    cout << "n_ratio = " << n_ratio << endl;
+    cout << "medDistRatio = " << medDistRatio << ", medianDistRatio = " << medianDistRatio << endl;
+    cout << "distRatios[1506] = " << distRatios[1506] << ", " << ", distRatios[1507]" << distRatios[1507] << ", distRatios[1508]" << distRatios[1508] << ", distRatios[1509]" << distRatios[1509] << endl;
+    cout << ", distRatios[1407]" << distRatios[1407] << endl;
+    cout << "pq.size() = " << pq.size() << endl;
+    cout << "meanDistRatio = " << meanDistRatio << endl;
+
 }
 
 int main()
