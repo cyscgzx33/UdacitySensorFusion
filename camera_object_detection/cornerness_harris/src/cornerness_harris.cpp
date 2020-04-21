@@ -51,6 +51,8 @@ void cornernessHarris()
             cv::KeyPoint new_keypoint;
             new_keypoint.pt = cv::Point2f(y, x); // fix: for some reason, here it must be (y, x)
                                                  // guess it's the definition by opencv
+                                                 // So, this means that src.at(i,j) is using (i,j) as (row,column) but Point(x,y) is using (x,y) as (column,row)
+                                                 // refer to StackOverfollow page for reference: https://stackoverflow.com/questions/25642532/opencv-pointx-y-represent-column-row-or-row-column
             new_keypoint.size = 2 * apertureSize;
             new_keypoint.response = response;
 

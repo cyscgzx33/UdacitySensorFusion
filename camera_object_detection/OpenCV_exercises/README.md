@@ -10,4 +10,9 @@
     * `cmake ..`
     * `make`
     * `sudo make install`
-* Finally check if the installation is successful, refer to [this cite](https://docs.opencv.org/2.4/doc/tutorials/introduction/linux_gcc_cmake/linux_gcc_cmake.html) 
+* Finally check if the installation is successful, refer to [this cite](https://docs.opencv.org/2.4/doc/tutorials/introduction/linux_gcc_cmake/linux_gcc_cmake.html)
+
+## Some Tips for Using OpenCV
+* OpenCV has some confusion part about row / col definitions:
+    * For example, `cv::Mat::at(i,j)` is using `(i,j)` as `(row, column)` but `cv::Point(x,y)` is using `(x,y)` as `(column, row)`
+    * Refer to [a StackOverfolow page](https://stackoverflow.com/questions/25642532/opencv-pointx-y-represent-column-row-or-row-column) as reference
