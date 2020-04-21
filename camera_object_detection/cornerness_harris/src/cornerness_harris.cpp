@@ -33,10 +33,22 @@ void cornernessHarris()
     cv::imshow(windowName, dst_norm_scaled);
     cv::waitKey(0);
 
-    // TODO: Your task is to locate local maxima in the Harris response matrix 
+    // TODO (done): Your task is to locate local maxima in the Harris response matrix 
     // and perform a non-maximum suppression (NMS) in a local neighborhood around 
     // each maximum. The resulting coordinates shall be stored in a list of keypoints 
     // of the type `vector<cv::KeyPoint>`.
+    vector<cv::KeyPoint> keypoints;
+    for (int x = 1; x < dst_norm_scaled.rows - 1; x++)
+    {
+        for (int y = 1; y < dst_norm_scaled.cols - 1; y++)
+        {
+            if ( dst_norm_scaled.at<unsigned int>(x, y) > dst_norm_scaled.at<unsigned int>(x - 1, y) &&
+                 dst_norm_scaled.at<unsigned int>(x, y) > dst_norm_scaled.at<unsigned int>(x + 1, y) &&
+                 dst_norm_scaled.at<unsigned int>(x, y) > dst_norm_scaled.at<unsigned int>(x, y - 1) &&
+                 dst_norm_scaled.at<unsigned int>(x, y) > dst_norm_scaled.at<unsigned int>(x, y + 1) )
+                 keypoints.emplace_back(x, y, 1); // what should be the size of keypoint???
+        }
+    }
 
 }
 
