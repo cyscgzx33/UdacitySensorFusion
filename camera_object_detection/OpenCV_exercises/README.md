@@ -12,7 +12,7 @@
     * `sudo make install`
 * (optional) In order to utilize some state-of-art algorithms / libraries, such as `FREAK`, `SURF` and `SIFT`, it is highly recommended to install `opencv_contrib` as well
     * `git clone https://github.com/opencv/opencv_contrib.git`
-    * now the `cmake ..` in last step should be changed to `cmake -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules ..` (suppose the `opencv_contrib` and `opencv` folders are seperated contained)
+    * now the `cmake ..` in last step should be changed to `cmake -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules ..` (suppose the `opencv_contrib` and `opencv` folders are seperatedly contained)
     * redo the following `make` and `sudo make install`
 * Finally check if the installation is successful, refer to [this cite](https://docs.opencv.org/2.4/doc/tutorials/introduction/linux_gcc_cmake/linux_gcc_cmake.html)
 
