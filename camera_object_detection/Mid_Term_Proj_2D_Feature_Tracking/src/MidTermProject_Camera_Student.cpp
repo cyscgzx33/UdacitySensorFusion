@@ -79,7 +79,7 @@ int main(int argc, const char *argv[])
 
         //// STUDENT ASSIGNMENT
         //// TASK MP.2 -> add the following keypoint detectors in file matching2D.cpp and enable string-based selection based on detectorType
-        //// -> HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
+        //// -> HARRIS (done), FAST (done), BRISK, ORB, AKAZE, SIFT
 
         if (detectorType.compare("SHITOMASI") == 0)
         {
@@ -145,7 +145,6 @@ int main(int argc, const char *argv[])
 
         if (dataBuffer.size() > 1) // wait until at least two images have been processed
         {
-
             /* MATCH KEYPOINT DESCRIPTORS */
 
             vector<cv::DMatch> matches;
