@@ -155,6 +155,12 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
         vector<cv::KeyPoint> kpts_BRISK;
         double t_BRISK = (double)cv::getTickCount();
 
+        // some parameters
+        int threshold = 30;
+
+        cv::Ptr<cv::FeatureDetector> detector = cv::BRISK::create(threshold);
+        detector->detect(img, keypoints);
+
         t_BRISK = ((double)cv::getTickCount() - t_BRISK) / cv::getTickFrequency();
         cout << "BRISK with n= " << kpts_BRISK.size() << " keypoints in " << 1000 * t_BRISK / 1.0 << " ms" << endl;
     }
@@ -162,6 +168,12 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
     {
         vector<cv::KeyPoint> kpts_ORB;
         double t_ORB = (double)cv::getTickCount();
+
+        // some parameters
+        int nfeatures = 3000; // default is 500 in the function
+
+        cv::Ptr<cv::FeatureDetector> detector = cv::ORB::create(nfeatures);
+        detector->detect(img, keypoints);
 
         t_ORB = ((double)cv::getTickCount() - t_ORB) / cv::getTickFrequency();
         cout << "ORB with n= " << kpts_ORB.size() << " keypoints in " << 1000 * t_ORB / 1.0 << " ms" << endl;
@@ -171,6 +183,9 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
         vector<cv::KeyPoint> kpts_AKAZE;
         double t_AKAZE = (double)cv::getTickCount();
 
+        cv::Ptr<cv::FeatureDetector> detector = cv::AKAZE::create();
+        detector->detect(img, keypoints);
+
         t_AKAZE = ((double)cv::getTickCount() - t_AKAZE) / cv::getTickFrequency();
         cout << "AKAZE with n= " << kpts_AKAZE.size() << " keypoints in " << 1000 * t_AKAZE / 1.0 << " ms" << endl;
     }
@@ -178,6 +193,9 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
     {
         vector<cv::KeyPoint> kpts_SIFT;
         double t_SIFT = (double)cv::getTickCount();
+
+        cv::Ptr<cv::FeatureDetector> detector = cv::xfeatures2d::SIFT::create();
+        detector->detect(img, keypoints);
 
         t_SIFT = ((double)cv::getTickCount() - t_SIFT) / cv::getTickFrequency();
         cout << "SIFT with n= " << kpts_SIFT.size() << " keypoints in " << 1000 * t_SIFT / 1.0 << " ms" << endl;
