@@ -5,21 +5,21 @@
 ## Tracking Performance Evaluation
 ### Evaluation 1: Keypoints Detection
 * Table 1: Number of keypoints detected on the preceding vehicle for 10 consecutive images, plus description of keypoints distribution
-    * Note: within the table, since the **`ORB`** interfaces requires an input of maximum feature to be detected, the values are all fixed number 3000 (same as the input)
+    * Note: within the table, since the `ORB` interfaces requires an input of maximum feature to be detected, the values are all fixed number 3000 (same as the input)
 
 | Detector | Shi-Tomasi | Harris | FAST    | BRISK    | ORB*    | Akaze   | SIFT |
 | ---      | ---        | ---    | ---     | ---      | ---     | ---     | ---  |
-| Img1     | 1370       | 492    | 1824    | 2757     | 3000    | 1351    | 1438 |
-| Img2     | 1301       | 502    | 1832    | 2777     | 3000    | 1327    | 1371 |
-| Img3     | 1361       | 516    | 1810    | 2741     | 3000    | 1311    | 1380 |
-| Img4     | 1358       | 524    | 1817    | 2735     | 3000    | 1351    | 1335 |
-| Img5     | 1333       | 523    | 1793    | 2757     | 3000    | 1360    | 1305 |
-| Img6     | 1284       | 511    | 1796    | 2695     | 3000    | 1347    | 1369 |
-| Img7     | 1322       | 505    | 1788    | 2715     | 3000    | 1363    | 1396 |
-| Img8     | 1366       | 510    | 1695    | 2628     | 3000    | 1311    | 1382 |
-| Img9     | 1389       | 529    | 1749    | 2639     | 3000    | 1358    | 1463 |
-| Img10    | 1339       | 520    | 1770    | 2672     | 3000    | 1331    | 1422 |
-| Description of Keypoints Distribution |  Keypoints are dense on vehicle plate and boundary, rare on rear window | Dense on boundary, roof and rear lights, rare on rear window | Very dense on vehicle boundary, dense on roof and rear lights, rare on rear window | Very dense on vehicle boundary, roof, dense on rear lights, rare on plate, some on shadow and lower part of the vehicle| Very dense on vehicle boundary, roof, dense on rear lights, rare on rear window | Dense on boundary, roof and rear lights, rare on rear window, some on lower part of the vehicle | Dense on boundary, roof rear lights and vechicle plate, rare on rear window, some on shadow and lower part of the vehicle |
+| Image 1  | 1370       | 492    | 1824    | 2757     | 3000    | 1351    | 1438 |
+| Image 2  | 1301       | 502    | 1832    | 2777     | 3000    | 1327    | 1371 |
+| Image 3  | 1361       | 516    | 1810    | 2741     | 3000    | 1311    | 1380 |
+| Image 4  | 1358       | 524    | 1817    | 2735     | 3000    | 1351    | 1335 |
+| Image 5  | 1333       | 523    | 1793    | 2757     | 3000    | 1360    | 1305 |
+| Image 6  | 1284       | 511    | 1796    | 2695     | 3000    | 1347    | 1369 |
+| Image 7  | 1322       | 505    | 1788    | 2715     | 3000    | 1363    | 1396 |
+| Image 8  | 1366       | 510    | 1695    | 2628     | 3000    | 1311    | 1382 |
+| Image 9  | 1389       | 529    | 1749    | 2639     | 3000    | 1358    | 1463 |
+| Image 10 | 1339       | 520    | 1770    | 2672     | 3000    | 1331    | 1422 |
+| Distribution | Dense on vehicle plate and boundary, rare on rear window | Dense on boundary, roof and rear lights, rare on rear window | Very dense on vehicle boundary, dense on roof and rear lights, rare on rear window | Very dense on vehicle boundary, roof, dense on rear lights, rare on plate, shadow and lower part of the vehicle| Very dense on vehicle boundary, roof, dense on rear lights, rare on rear window | Dense on boundary, roof and rear lights, rare on rear window, lower part of vehicle | Dense on boundary, roof rear lights and vechicle plate, rare on rear window, shadow and lower part of the vehicle |
 
 ### Evaluation 2: Combination of Keypoints Detection, Description and Matching
 * Table 2: Number of keypoints matched on the preceding vehicle for 10 consecutive images
