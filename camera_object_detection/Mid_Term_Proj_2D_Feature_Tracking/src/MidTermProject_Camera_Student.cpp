@@ -196,7 +196,7 @@ int main(int argc, const char *argv[])
                 cv::namedWindow(windowName, 7);
                 cv::imshow(windowName, matchImg);
                 cout << "Press key to continue to next image" << endl;
-                // cv::waitKey(0); // wait for key to be pressed
+                cv::waitKey(0); // wait for key to be pressed
             }
             bVis = false;
         }
