@@ -78,7 +78,6 @@ void matchDescriptors(cv::Mat &imgSource, cv::Mat &imgRef, vector<cv::KeyPoint> 
 void matchDescriptorsSOL(cv::Mat &imgSource, cv::Mat &imgRef, vector<cv::KeyPoint> &kPtsSource, vector<cv::KeyPoint> &kPtsRef, cv::Mat &descSource, cv::Mat &descRef,
                          vector<cv::DMatch> &matches, string descriptorType, string matcherType, string selectorType)
 {
-
     // configure matcher
     bool crossCheck = false;
     cv::Ptr<cv::DescriptorMatcher> matcher;
@@ -86,7 +85,7 @@ void matchDescriptorsSOL(cv::Mat &imgSource, cv::Mat &imgRef, vector<cv::KeyPoin
     if (matcherType.compare("MAT_BF") == 0)
     {
 
-        int normType = descriptorType.compare("DES_BINARY") == 0 ? cv::NORM_HAMMING : cv::NORM_L2;
+        int normType = descriptorType.compare("DES_BINARY") == 0 ? cv::NORM_HAMMING : cv::NORM_L2; // necessary to make this criteria
         matcher = cv::BFMatcher::create(normType, crossCheck);
         cout << "BF matching cross-check=" << crossCheck;
     }

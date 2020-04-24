@@ -13,7 +13,7 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
 
     if (matcherType.compare("MAT_BF") == 0)
     {
-        int normType = cv::NORM_HAMMING;
+        int normType = descriptorType.compare("DES_BINARY") == 0 ? cv::NORM_HAMMING : cv::NORM_L2;
         matcher = cv::BFMatcher::create(normType, crossCheck);
     }
     else if (matcherType.compare("MAT_FLANN") == 0)
@@ -78,10 +78,15 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
         extractor = cv::xfeatures2d::FREAK::create(); // trial 1: to use default values of "FREAK"
                                                       // trial 2: to mimic the "BRISK" parameters
     }
-    else if (descriptorType.compare("AKAZE") == 0)
+    else if (descriptorType.compare("AKAZE") == 0) // Note (very important!): "KAZE" / "AKAZE" descriptors will only work with their own keypoints
+                                                   // This is because they store certain information in the class_id field of keypoints, 
+                                                   // which is then retrieved when computing descriptors. All other detectors set it to -1 (unused).
+                                                   // Reference: amroamroamro's comment in the page https://github.com/kyamagu/mexopencv/issues/351
     {
+        cout << "AKAZE extractor is creating ... ..." << endl;
         extractor = cv::AKAZE::create(); // trial 1: to use default values of "AKAZE"
                                          // trial 2: to mimic the "BRISK" parameters
+        cout << "AKAZE extractor creating process is done!" << endl;
     }
     else if (descriptorType.compare("SIFT") == 0)
     {
