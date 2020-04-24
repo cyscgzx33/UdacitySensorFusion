@@ -143,16 +143,14 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
 {
     if (detectorType.compare("FAST") == 0)
     {
-        vector<cv::KeyPoint> kpts_FAST;
         double t_FAST = (double)cv::getTickCount();
         double intensity_threshold = 30;
-        cv::FAST(img, kpts_FAST, intensity_threshold, true);
+        cv::FAST(img, keypoints, intensity_threshold, true);
         t_FAST = ((double)cv::getTickCount() - t_FAST) / cv::getTickFrequency();
-        cout << "FAST with n= " << kpts_FAST.size() << " keypoints in " << 1000 * t_FAST / 1.0 << " ms" << endl;
+        cout << "FAST with n= " << keypoints.size() << " keypoints in " << 1000 * t_FAST / 1.0 << " ms" << endl;
     }
     else if (detectorType.compare("BRISK") == 0)
     {
-        vector<cv::KeyPoint> kpts_BRISK;
         double t_BRISK = (double)cv::getTickCount();
 
         // some parameters
@@ -162,11 +160,10 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
         detector->detect(img, keypoints);
 
         t_BRISK = ((double)cv::getTickCount() - t_BRISK) / cv::getTickFrequency();
-        cout << "BRISK with n= " << kpts_BRISK.size() << " keypoints in " << 1000 * t_BRISK / 1.0 << " ms" << endl;
+        cout << "BRISK with n= " << keypoints.size() << " keypoints in " << 1000 * t_BRISK / 1.0 << " ms" << endl;
     }
     else if (detectorType.compare("ORB") == 0)
     {
-        vector<cv::KeyPoint> kpts_ORB;
         double t_ORB = (double)cv::getTickCount();
 
         // some parameters
@@ -176,28 +173,26 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
         detector->detect(img, keypoints);
 
         t_ORB = ((double)cv::getTickCount() - t_ORB) / cv::getTickFrequency();
-        cout << "ORB with n= " << kpts_ORB.size() << " keypoints in " << 1000 * t_ORB / 1.0 << " ms" << endl;
+        cout << "ORB with n= " << keypoints.size() << " keypoints in " << 1000 * t_ORB / 1.0 << " ms" << endl;
     }
     else if (detectorType.compare("AKAZE") == 0)
     {
-        vector<cv::KeyPoint> kpts_AKAZE;
         double t_AKAZE = (double)cv::getTickCount();
 
         cv::Ptr<cv::FeatureDetector> detector = cv::AKAZE::create();
         detector->detect(img, keypoints);
 
         t_AKAZE = ((double)cv::getTickCount() - t_AKAZE) / cv::getTickFrequency();
-        cout << "AKAZE with n= " << kpts_AKAZE.size() << " keypoints in " << 1000 * t_AKAZE / 1.0 << " ms" << endl;
+        cout << "AKAZE with n= " << keypoints.size() << " keypoints in " << 1000 * t_AKAZE / 1.0 << " ms" << endl;
     }
     else if (detectorType.compare("SIFT") == 0)
     {
-        vector<cv::KeyPoint> kpts_SIFT;
         double t_SIFT = (double)cv::getTickCount();
 
         cv::Ptr<cv::FeatureDetector> detector = cv::xfeatures2d::SIFT::create();
         detector->detect(img, keypoints);
 
         t_SIFT = ((double)cv::getTickCount() - t_SIFT) / cv::getTickFrequency();
-        cout << "SIFT with n= " << kpts_SIFT.size() << " keypoints in " << 1000 * t_SIFT / 1.0 << " ms" << endl;
+        cout << "SIFT with n= " << keypoints.size() << " keypoints in " << 1000 * t_SIFT / 1.0 << " ms" << endl;
     }
 }
