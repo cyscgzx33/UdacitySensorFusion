@@ -29,7 +29,6 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
     // perform matching task
     if (selectorType.compare("SEL_NN") == 0)
     { // nearest neighbor (best match)
-
         matcher->match(descSource, descRef, matches); // Finds the best match for each descriptor in desc1
     }
     else if (selectorType.compare("SEL_KNN") == 0)
@@ -49,7 +48,7 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
 }
 
 // Use one of several types of state-of-art descriptors to uniquely identify keypoints
-void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descriptors, string descriptorType)
+void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descriptors, string descriptorType, double& time_elapsed)
 {
     // select appropriate descriptor
     cv::Ptr<cv::DescriptorExtractor> extractor;
@@ -99,10 +98,13 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
     extractor->compute(img, keypoints, descriptors);
     t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
     cout << descriptorType << " descriptor extraction in " << 1000 * t / 1.0 << " ms" << endl;
+
+    // update time elapsed
+    time_elapsed += 1000 * t / 1.0;
 }
 
 // Detect keypoints in image using the traditional Shi-Thomasi detector
-void detKeypointsShiTomasi(vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool bVis)
+void detKeypointsShiTomasi(vector<cv::KeyPoint> &keypoints, cv::Mat &img, double& time_elapsed, bool bVis)
 {
     // compute detector parameters based on image size
     int blockSize = 4;       //  size of an average block for computing a derivative covariation matrix over each pixel neighborhood
@@ -139,9 +141,12 @@ void detKeypointsShiTomasi(vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool b
         imshow(windowName, visImage);
         cv::waitKey(0);
     }
+
+    // update time elapsed
+    time_elapsed += 1000 * t / 1.0;
 }
 
-void detKeypointsHarris(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool bVis)
+void detKeypointsHarris(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, double& time_elapsed, bool bVis)
 {
     // compute detector parameters based on image size
     int blockSize = 4;       //  size of an average block for computing a derivative covariation matrix over each pixel neighborhood
@@ -178,62 +183,67 @@ void detKeypointsHarris(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool
         imshow(windowName, visImage);
         cv::waitKey(0);
     }
+
+    // update time elapsed
+    time_elapsed += 1000 * t / 1.0;
 }
 
-void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std::string detectorType, bool bVis)
+void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std::string detectorType, double& time_elapsed, bool bVis)
 {
+    double t;
     if (detectorType.compare("FAST") == 0)
     {
-        double t_FAST = (double)cv::getTickCount();
+        t = (double)cv::getTickCount();
         double intensity_threshold = 30;
         cv::FAST(img, keypoints, intensity_threshold, true);
-        t_FAST = ((double)cv::getTickCount() - t_FAST) / cv::getTickFrequency();
-        cout << "FAST with n= " << keypoints.size() << " keypoints in " << 1000 * t_FAST / 1.0 << " ms" << endl;
+        t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+        cout << "FAST with n= " << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
     }
     else if (detectorType.compare("BRISK") == 0)
     {
-        double t_BRISK = (double)cv::getTickCount();
-
+        t = (double)cv::getTickCount();
         // some parameters
         int threshold = 30;
 
         cv::Ptr<cv::FeatureDetector> detector = cv::BRISK::create(threshold);
         detector->detect(img, keypoints);
 
-        t_BRISK = ((double)cv::getTickCount() - t_BRISK) / cv::getTickFrequency();
-        cout << "BRISK with n= " << keypoints.size() << " keypoints in " << 1000 * t_BRISK / 1.0 << " ms" << endl;
+        t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+        cout << "BRISK with n= " << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
     }
     else if (detectorType.compare("ORB") == 0)
     {
-        double t_ORB = (double)cv::getTickCount();
-
+        t = (double)cv::getTickCount();
         // some parameters
         int nfeatures = 3000; // default is 500 in the function
 
         cv::Ptr<cv::FeatureDetector> detector = cv::ORB::create(nfeatures);
         detector->detect(img, keypoints);
 
-        t_ORB = ((double)cv::getTickCount() - t_ORB) / cv::getTickFrequency();
-        cout << "ORB with n= " << keypoints.size() << " keypoints in " << 1000 * t_ORB / 1.0 << " ms" << endl;
+        t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+        cout << "ORB with n= " << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
     }
     else if (detectorType.compare("AKAZE") == 0)
     {
-        double t_AKAZE = (double)cv::getTickCount();
+        t = (double)cv::getTickCount();
 
         cv::Ptr<cv::FeatureDetector> detector = cv::AKAZE::create();
         detector->detect(img, keypoints);
 
-        t_AKAZE = ((double)cv::getTickCount() - t_AKAZE) / cv::getTickFrequency();
-        cout << "AKAZE with n= " << keypoints.size() << " keypoints in " << 1000 * t_AKAZE / 1.0 << " ms" << endl;
+        t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+        cout << "AKAZE with n= " << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
     }
     else if (detectorType.compare("SIFT") == 0)
     {
-        double t_SIFT = (double)cv::getTickCount();
+        t = (double)cv::getTickCount();
 
         cv::Ptr<cv::FeatureDetector> detector = cv::xfeatures2d::SIFT::create();
         detector->detect(img, keypoints);
 
-        t_SIFT = ((double)cv::getTickCount() - t_SIFT) / cv::getTickFrequency();
-        cout << "SIFT with n= " << keypoints.size() << " keypoints in " << 1000 * t_SIFT / 1.0 << " ms" << endl;
+        t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+        cout << "SIFT with n= " << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
     }
+
+    // update time elapsed
+    time_elapsed += 1000 * t / 1.0;
 }

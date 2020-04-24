@@ -38,6 +38,9 @@ int main(int argc, const char *argv[])
     int dataBufferSize = 2;       // no. of images which are held in memory (ring buffer) at the same time
     vector<DataFrame> dataBuffer; // list of data frames which are held in memory at the same time
     bool bVis = false;            // visualize results
+    int matchedKptsTotal = 0;     // evaluate total matched keypoints
+    double time_elapsed = 0.0;    // evaluate total time (in ms) elapsed to process matching and description
+
 
     /* MAIN LOOP OVER ALL IMAGES */
 
@@ -74,7 +77,7 @@ int main(int argc, const char *argv[])
 
         // extract 2D keypoints from current image
         vector<cv::KeyPoint> keypoints; // create empty feature list for current image
-        string detectorType = "SIFT";  // default: SHITOMASI
+        string detectorType = "FAST";  // default: SHITOMASI
 
         //// STUDENT ASSIGNMENT
         //// TASK MP.2 -> add the following keypoint detectors in file matching2D.cpp and enable string-based selection based on detectorType
@@ -82,16 +85,16 @@ int main(int argc, const char *argv[])
 
         if (detectorType.compare("SHITOMASI") == 0)
         {
-            detKeypointsShiTomasi(keypoints, imgGray, false);
+            detKeypointsShiTomasi(keypoints, imgGray, time_elapsed, false);
         }
         else if (detectorType.compare("HARRIS") == 0)
         {
-            detKeypointsHarris(keypoints, imgGray, false);
+            detKeypointsHarris(keypoints, imgGray, time_elapsed, false);
         }
         else
         {
             // call the modern detection algorithm types
-            detKeypointsModern(keypoints, imgGray, detectorType, false);
+            detKeypointsModern(keypoints, imgGray, detectorType, time_elapsed, false);
         }
         //// EOF STUDENT ASSIGNMENT
 
@@ -140,9 +143,9 @@ int main(int argc, const char *argv[])
         //// -> BRIEF, ORB, FREAK, AKAZE, SIFT
 
         cv::Mat descriptors;
-        string descriptorType = "BRISK"; // default: BRISK
+        string descriptorType = "BRIEF"; // default: BRISK
                                          // BRIEF, ORB, FREAK, AKAZE, SIFT
-        descKeypoints((dataBuffer.end() - 1)->keypoints, (dataBuffer.end() - 1)->cameraImg, descriptors, descriptorType);
+        descKeypoints((dataBuffer.end() - 1)->keypoints, (dataBuffer.end() - 1)->cameraImg, descriptors, descriptorType, time_elapsed);
         //// EOF STUDENT ASSIGNMENT
 
         // push descriptors for current frame to end of data buffer
@@ -157,7 +160,7 @@ int main(int argc, const char *argv[])
             vector<cv::DMatch> matches;
             string matcherType = "MAT_BF";        // MAT_BF, MAT_FLANN
             string descriptorType = "DES_HOG"; // DES_BINARY, DES_HOG
-            string selectorType = "SEL_NN";       // SEL_NN, SEL_KNN
+            string selectorType = "SEL_KNN";       // SEL_NN, SEL_KNN
 
             //// STUDENT ASSIGNMENT
             //// TASK MP.5 -> add FLANN matching in file matching2D.cpp
@@ -171,6 +174,10 @@ int main(int argc, const char *argv[])
 
             // store matches in current data frame
             (dataBuffer.end() - 1)->kptMatches = matches;
+
+            // update matched keypoints total number
+            matchedKptsTotal += matches.size();
+            cout << "matched keypoints in this step = " << matchedKptsTotal << endl;
 
             cout << "#4 : MATCH KEYPOINT DESCRIPTORS done" << endl;
 
@@ -189,12 +196,15 @@ int main(int argc, const char *argv[])
                 cv::namedWindow(windowName, 7);
                 cv::imshow(windowName, matchImg);
                 cout << "Press key to continue to next image" << endl;
-                cv::waitKey(0); // wait for key to be pressed
+                // cv::waitKey(0); // wait for key to be pressed
             }
             bVis = false;
         }
 
     } // eof loop over all images
+
+    cout << "Total matched keypoints = " << matchedKptsTotal << endl;
+    cout << "Total time elapsed for detection and description in " << time_elapsed << " ms" << endl;
 
     return 0;
 }
