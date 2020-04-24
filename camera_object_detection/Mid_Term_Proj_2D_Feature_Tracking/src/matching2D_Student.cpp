@@ -18,7 +18,12 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
     }
     else if (matcherType.compare("MAT_FLANN") == 0)
     {
-        // ...
+        if (descSource.type() != CV_32F)
+        { // OpenCV bug workaround : convert binary descriptors to floating point due to a bug in current OpenCV implementation
+            descSource.convertTo(descSource, CV_32F);
+            descRef.convertTo(descRef, CV_32F);
+        }
+        matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::FLANNBASED);
     }
 
     // perform matching task
@@ -29,8 +34,17 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
     }
     else if (selectorType.compare("SEL_KNN") == 0)
     { // k nearest neighbors (k=2)
-
-        // ...
+        int k = 2;
+        vector<vector<cv::DMatch>> knn_matches;
+        int normType = descriptorType.compare("DES_BINARY") == 0 ? cv::NORM_HAMMING : cv::NORM_L2;
+        matcher->knnMatch(descSource, descRef, knn_matches, k);
+        // filter matches using descriptor distance ratio test
+        double min_desc_dist_ratio = 0.8;
+        for (auto& knn_match : knn_matches)
+        {
+            if (knn_match[0].distance < knn_match[1].distance * 0.8) // Note: compare the closest match and second-closest match ratio
+                matches.push_back(knn_match[0]);
+        }
     }
 }
 
@@ -47,10 +61,32 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
 
         extractor = cv::BRISK::create(threshold, octaves, patternScale);
     }
-    else
+    else if (descriptorType.compare("BRIEF") == 0)
     {
+        extractor = cv::xfeatures2d::BriefDescriptorExtractor::create(); // use the default values
+    }
+    else if (descriptorType.compare("ORB") == 0)
+    {
+        int nfeatures = 3000;      // ORB methods maximum support features
+        extractor = cv::ORB::create(nfeatures);
+    }
+    else if (descriptorType.compare("FREAK") == 0)
+    {
+        int octaves = 3;           // detection octaves (use 0 to do single scale)
+        float patternScale = 1.0f; // apply this scale to the pattern used for sampling the neighbourhood of a keypoint.
 
-        //...
+        extractor = cv::xfeatures2d::FREAK::create(); // trial 1: to use default values of "FREAK"
+                                                      // trial 2: to mimic the "BRISK" parameters
+    }
+    else if (descriptorType.compare("AKAZE") == 0)
+    {
+        extractor = cv::AKAZE::create(); // trial 1: to use default values of "AKAZE"
+                                         // trial 2: to mimic the "BRISK" parameters
+    }
+    else if (descriptorType.compare("SIFT") == 0)
+    {
+        extractor = cv::xfeatures2d::SIFT::create(); // trial 1: to use default values of "SIFT"
+                                                     // trial 2: to mimic the "BRISK" parameters
     }
 
     // perform feature description

@@ -21,7 +21,6 @@ using namespace std;
 /* MAIN PROGRAM */
 int main(int argc, const char *argv[])
 {
-
     /* INIT VARIABLES AND DATA STRUCTURES */
 
     // data location
@@ -79,7 +78,7 @@ int main(int argc, const char *argv[])
 
         //// STUDENT ASSIGNMENT
         //// TASK MP.2 -> add the following keypoint detectors in file matching2D.cpp and enable string-based selection based on detectorType
-        //// -> HARRIS (done), FAST (done), BRISK, ORB, AKAZE, SIFT
+        //// -> HARRIS (done), FAST (done), BRISK (done), ORB (done), AKAZE (done), SIFT (done)
 
         if (detectorType.compare("SHITOMASI") == 0)
         {
