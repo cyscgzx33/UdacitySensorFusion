@@ -98,13 +98,20 @@ int main(int argc, const char *argv[])
 
         //// STUDENT ASSIGNMENT
         //// TASK MP.3 -> only keep keypoints on the preceding vehicle
-
+        // A brutal rule based strategy, only valid for mid-term project
         // only keep keypoints on the preceding vehicle
         bool bFocusOnVehicle = true;
+        vector<cv::KeyPoint> temp_keypoints = keypoints;
+        keypoints.resize(0);
         cv::Rect vehicleRect(535, 180, 180, 150);
         if (bFocusOnVehicle)
         {
-            // ...
+            // only take keypoints within the rectangle
+            for (auto& temp_kpt : temp_keypoints)
+            {
+                if (vehicleRect.contains(temp_kpt.pt))
+                    keypoints.push_back(temp_kpt);
+            }
         }
 
         //// EOF STUDENT ASSIGNMENT
