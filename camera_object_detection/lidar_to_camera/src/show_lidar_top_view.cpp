@@ -26,13 +26,11 @@ void showLidarTopview()
         float yw = (*it).y; // world position in m with y facing left from sensor
         float zw = (*it).z; // world position in m with z facing down from sensor
 
-        // refer to the equation: x_prime = alpha * x / z + Cx
-        //                        y_prime = beta * y / z + Cy
-        //                        alpha and beta are resolution
+        // apply scaling given the ratio between world size and image size
         int y = (-xw * imageSize.height / worldSize.height) + imageSize.height;
         int x = (-yw * imageSize.height / worldSize.height) + imageSize.width / 2;
 
-        // TODO: 
+        // TODO (done): 
         // 1. Change the color of the Lidar points such that 
         // X=0.0m corresponds to red while X=20.0m is shown as green.
         // 2. Remove all Lidar points on the road surface while preserving 
