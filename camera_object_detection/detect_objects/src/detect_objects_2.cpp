@@ -13,7 +13,7 @@ using namespace std;
 void detectObjects2()
 {
     // load image from file
-    cv::Mat img = cv::imread("../images/s_thrun.jpg");
+    cv::Mat img = cv::imread("../images/traffic_experiment_1.jpg");
 
     // load class names from file
     string yoloBasePath = "../dat/yolo/";
@@ -34,13 +34,14 @@ void detectObjects2()
     // generate 4D blob from input image
     cv::Mat blob;
     double scalefactor = 1/255.0;
-    cv::Size size = cv::Size(416, 416);
+    cv::Size size = cv::Size(832, 832);  // default: 416 * 416
+                                         // Experiment 1: changing the size leads to deviation of final confidence
     cv::Scalar mean = cv::Scalar(0,0,0);
     bool swapRB = false;
     bool crop = false;
     cv::dnn::blobFromImage(img, blob, scalefactor, size, mean, swapRB, crop);
 
-    // Get names of output layers
+    // get names of output layers
     vector<cv::String> names;
     vector<int> outLayers = net.getUnconnectedOutLayers(); // get indices of output layers, i.e. layers with unconnected outputs
     vector<cv::String> layersNames = net.getLayerNames(); // get names of all layers in the network
@@ -57,7 +58,8 @@ void detectObjects2()
     net.forward(netOutput, names);
 
     // Scan through all bounding boxes and keep only the ones with high confidence
-    float confThreshold = 0.20;
+    float confThreshold = 0.30; // default 0.20
+                                // Experiment 2: changing the confThreshold will directly change the final results due to confidence
     vector<int> classIds;
     vector<float> confidences;
     vector<cv::Rect> boxes;
@@ -69,7 +71,7 @@ void detectObjects2()
             cv::Mat scores = netOutput[i].row(j).colRange(5, netOutput[i].cols);
             cv::Point classId;
             double confidence;
-            
+
             // Get the value and location of the maximum score
             cv::minMaxLoc(scores, 0, &confidence, 0, &classId);
             if (confidence > confThreshold)
@@ -91,6 +93,10 @@ void detectObjects2()
 
     // perform non-maxima suppression
     float nmsThreshold = 0.4;  // Non-maximum suppression threshold
+                               // default 0.40
+                               // Experiment 3: take "../images/traffic_experiment_1.jpg" as an example,
+                               //               using higher (eg. 0.90) nmsThreshold would make it more difficult to remove overlapping
+                               //               using lower (eg. 0.05) nmsThreshold would lose actual vehicles with close distance to each other, by false NMS
     vector<int> indices;
     cv::dnn::NMSBoxes(boxes, confidences, confThreshold, nmsThreshold, indices);
     std::vector<BoundingBox> bBoxes;
@@ -104,8 +110,7 @@ void detectObjects2()
         
         bBoxes.push_back(bBox);
     }
-    
-    
+
     // show results
     cv::Mat visImg = img.clone();
     for (auto it = bBoxes.begin(); it != bBoxes.end(); ++it)
