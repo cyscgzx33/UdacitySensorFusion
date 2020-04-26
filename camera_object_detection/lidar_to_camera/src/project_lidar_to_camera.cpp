@@ -47,14 +47,26 @@ void projectLidarToCamera2()
 
     cv::Mat X(4,1,cv::DataType<double>::type);
     cv::Mat Y(3,1,cv::DataType<double>::type);
-    for(auto it=lidarPoints.begin(); it!=lidarPoints.end(); ++it) {
+    for (auto it=lidarPoints.begin(); it!=lidarPoints.end(); ++it) {
+        // 0. Filter out point clouds out of interested region
+        float x_max = 25.0, x_min = 0.0, y_max = 6.0, z_min = -1.4, range_min = 0.01;
+        if (it->x > x_max || it->x < x_min || abs(it->y) > y_max || it->z < z_min || it->r < range_min)
+            continue;
+
         // 1. Convert current Lidar point into homogeneous coordinates and store it in the 4D variable X.
+        X.at<double>(0, 0) = it->x;
+        X.at<double>(1, 0) = it->y;
+        X.at<double>(2, 0) = it->z;
+        X.at<double>(3, 0) = 1.0;
 
         // 2. Then, apply the projection equation as detailed in lesson 5.1 to map X onto the image plane of the camera. 
         // Store the result in Y.
+        Y = P_rect_00 * R_rect_00 * RT * X;
 
         // 3. Once this is done, transform Y back into Euclidean coordinates and store the result in the variable pt.
         cv::Point pt;
+        pt.x = Y.at<double>(0, 0) / Y.at<double>(2, 0);
+        pt.y = Y.at<double>(1, 0) / Y.at<double>(2, 0);
 
         float val = it->x;
         float maxVal = 20.0;
