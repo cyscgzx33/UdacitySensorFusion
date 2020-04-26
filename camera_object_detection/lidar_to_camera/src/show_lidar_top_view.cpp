@@ -43,9 +43,8 @@ void showLidarTopview()
             continue;
         float scale_val = it->x; // using distance to the object as the scale value for color
         float max_val = worldSize.height; // using the height as the max value
-        int red = min( 255, (int) (255 * abs(scale_val - max_val)/max_val) );
+        int red   = min( 255, (int) (255 * abs(scale_val - max_val)/max_val) );
         int green = min( 255, (int) (255 * (1 - abs(scale_val - max_val)/max_val) ) );
-        cout << "red = " << red << ", green = " << green << endl;
         cv::circle(topviewImg, cv::Point(x, y), 5, cv::Scalar(0, green, red), -1);
     }
 
