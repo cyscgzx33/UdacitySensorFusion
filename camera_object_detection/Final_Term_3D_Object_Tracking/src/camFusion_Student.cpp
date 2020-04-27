@@ -148,7 +148,79 @@ void computeTTCCamera(std::vector<cv::KeyPoint> &kptsPrev, std::vector<cv::KeyPo
 void computeTTCLidar(std::vector<LidarPoint> &lidarPointsPrev,
                      std::vector<LidarPoint> &lidarPointsCurr, double frameRate, double &TTC)
 {
-    // ...
+    // auxiliary variables
+    double dT = 0.1;        // time between two measurements in seconds
+    double laneWidth = 4.0; // assumed width of the ego lane
+
+    // find closest distance to Lidar points within ego lane
+    double minXPrev = 1e9, minXCurr = 1e9;
+
+    // an alternative strategy to filter outliers: using 2 percentile point (Step 1 ~ Step 3)
+    // reason: assume 98% of the lidar points fall in the trustable region
+    std::vector<LidarPoint> lidarPointsPrevCopy, lidarPointsCurrCopy;
+    
+    // Step 1: copy temp vectors for sorting
+    for (auto it = lidarPointsPrev.begin(); it != lidarPointsPrev.end(); ++it)
+    {
+        // Extended a rule based filter: 
+        // Only considering Lidar points within a narrow corridor in ego lane
+        if (it->y > laneWidth / 2.0 || it->y < -laneWidth / 2.0)
+            continue;
+        printf("it->x = %f\n", it->x);
+        lidarPointsPrevCopy.push_back(*it);
+    }
+    for (auto it = lidarPointsCurr.begin(); it != lidarPointsCurr.end(); ++it)
+    {
+        // Extended a rule based filter: 
+        // Only considering Lidar points within a narrow corridor in ego lane
+        if (it->y > laneWidth / 2.0 || it->y < -laneWidth / 2.0)
+            continue;
+        lidarPointsCurrCopy.push_back(*it);
+    }
+
+    // Step 2: sort lidar points from closer to ego vehicle to far away
+    sort( lidarPointsPrevCopy.begin( ), lidarPointsPrevCopy.end( ), [ ]( const LidarPoint& lhs, const LidarPoint& rhs )
+    {
+        return lhs.x < rhs.x;
+    });
+    sort( lidarPointsCurrCopy.begin( ), lidarPointsCurrCopy.end( ), [ ]( const LidarPoint& lhs, const LidarPoint& rhs )
+    {
+        return lhs.x < rhs.x;
+    });
+
+    // Step 3: compare the quantile point between prev frame and curr frame
+    int n_prev = lidarPointsPrevCopy.size();
+    int n_curr = lidarPointsCurrCopy.size();
+    minXPrev = lidarPointsPrevCopy[n_prev/50].x;
+    minXCurr = lidarPointsCurrCopy[n_curr/50].x;
+    
+    // Debug
+    printf("---------------------------------------------\n");
+    printf("minXCurr = %f, minXPrev = %f\n", minXCurr, minXPrev);
+
+    /* Initial method w/o considering outliers */
+    // for (auto it = lidarPointsPrev.begin(); it != lidarPointsPrev.end(); ++it)
+    // {
+    //     // Extended a rule based filter: 
+    //     // Only considering Lidar points within a narrow corridor in ego lane
+    //     if (it->y > laneWidth / 2.0 || it->y < -laneWidth / 2.0)
+    //         continue;
+
+    //     minXPrev = minXPrev > it->x ? it->x : minXPrev;
+    // }
+
+    // for (auto it = lidarPointsCurr.begin(); it != lidarPointsCurr.end(); ++it)
+    // {
+    //     // Extended a rule based filter: 
+    //     // Only considering Lidar points within a narrow corridor in ego lane
+    //     if (it->y > laneWidth / 2.0 || it->y < -laneWidth / 2.0)
+    //         continue;
+
+    //     minXCurr = minXCurr > it->x ? it->x : minXCurr;
+    // }
+
+    // compute TTC from both measurements
+    TTC = minXCurr * dT / (minXPrev - minXCurr);
 }
 
 
@@ -227,9 +299,9 @@ void matchBoundingBoxes(std::vector<cv::DMatch> &matches, std::map<int, int> &bb
 
 
     // (Debug) check if the bbBestMatches assignments make sense
-    printf("The best matches are (boxID in prev frame -> boxID in curr frame): \n");
-    for (auto it = bbBestMatches.begin(); it != bbBestMatches.end(); it++)
-    {
-        printf("%d -> %d.\n", it->first, it->second);
-    }
+    // printf("The best matches are (boxID in prev frame -> boxID in curr frame): \n");
+    // for (auto it = bbBestMatches.begin(); it != bbBestMatches.end(); it++)
+    // {
+    //     printf("%d -> %d.\n", it->first, it->second);
+    // }
 }
