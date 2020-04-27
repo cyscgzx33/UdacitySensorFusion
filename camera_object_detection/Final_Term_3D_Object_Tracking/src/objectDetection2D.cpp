@@ -46,11 +46,11 @@ void detectObjects(cv::Mat& img, std::vector<BoundingBox>& bBoxes, float confThr
     names.resize(outLayers.size());
     for (size_t i = 0; i < outLayers.size(); ++i) // Get the names of the output layers in names
         names[i] = layersNames[outLayers[i] - 1];
-    
+
     // invoke forward propagation through network
     net.setInput(blob);
     net.forward(netOutput, names);
-    
+
     // Scan through all bounding boxes and keep only the ones with high confidence
     vector<int> classIds; vector<float> confidences; vector<cv::Rect> boxes;
     for (size_t i = 0; i < netOutput.size(); ++i)
@@ -61,7 +61,7 @@ void detectObjects(cv::Mat& img, std::vector<BoundingBox>& bBoxes, float confThr
             cv::Mat scores = netOutput[i].row(j).colRange(5, netOutput[i].cols);
             cv::Point classId;
             double confidence;
-            
+
             // Get the value and location of the maximum score
             cv::minMaxLoc(scores, 0, &confidence, 0, &classId);
             if (confidence > confThreshold)
@@ -97,7 +97,6 @@ void detectObjects(cv::Mat& img, std::vector<BoundingBox>& bBoxes, float confThr
     
     // show results
     if(bVis) {
-        
         cv::Mat visImg = img.clone();
         for(auto it=bBoxes.begin(); it!=bBoxes.end(); ++it) {
             

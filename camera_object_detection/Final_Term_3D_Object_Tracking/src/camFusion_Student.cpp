@@ -152,7 +152,84 @@ void computeTTCLidar(std::vector<LidarPoint> &lidarPointsPrev,
 }
 
 
+// Implemented matching bboxes using unordered_map of unordered_map
 void matchBoundingBoxes(std::vector<cv::DMatch> &matches, std::map<int, int> &bbBestMatches, DataFrame &prevFrame, DataFrame &currFrame)
 {
-    // ...
+    cout << "matchBoundingBoxes() is called!" << endl;
+    // keypoints of prev & curr frames
+    auto& prev_kpts = prevFrame.keypoints;
+    auto& curr_kpts = currFrame.keypoints;
+    
+    // bboxes of prev & curr frames
+    std::vector<BoundingBox>& prev_bboxes = prevFrame.boundingBoxes;
+    std::vector<BoundingBox>& curr_bboxes = currFrame.boundingBoxes;
+
+    // a container counting occurrances of each pair of matches
+    std::unordered_map<int, std::unordered_map<int, int>> occurrances;
+
+    // iterate to count occurrances of pairs of matching
+    for (cv::DMatch& match : matches)
+    {
+        // access prev_kpt & curr_kpt by reference
+        int prev_kpt_id = match.queryIdx;
+        int curr_kpt_id = match.trainIdx;
+        cv::KeyPoint& prev_kpt = prev_kpts[prev_kpt_id];
+        cv::KeyPoint& curr_kpt = curr_kpts[curr_kpt_id];
+
+        // find out which bbox contains prev_kpt & curr_kpt
+        vector<int> prev_bbox_indices, curr_bbox_indices;
+        for (auto& prev_bbox : prev_bboxes)
+        {
+            if (prev_bbox.roi.contains(prev_kpt.pt))
+                prev_bbox_indices.push_back(prev_bbox.boxID);
+        }
+        for (auto& curr_bbox : curr_bboxes)
+        {
+            if (curr_bbox.roi.contains(curr_kpt.pt))
+                curr_bbox_indices.push_back(curr_bbox.boxID);
+        }
+
+        // count pairs
+        for (auto prev_bbox_id : prev_bbox_indices)
+        {
+            for (auto curr_bbox_id : curr_bbox_indices)
+            {
+                if (occurrances.count(prev_bbox_id) == 0)
+                    occurrances.insert({prev_bbox_id, unordered_map<int, int>()});
+                occurrances[prev_bbox_id][curr_bbox_id]++;
+            }
+        }
+    }
+
+    // iterate the occurrances to obtain final result of bbBestMatches
+    for (auto it = occurrances.begin(); it != occurrances.end(); it++)
+    {
+        int prev_bbox_id = it->first;
+        std::unordered_map<int,int>& prev_id_matches = it->second;
+
+        int max_occurrance = 0;
+        int max_occurrance_curr_id = -1;
+        
+        // find the curr id with highest occurance value
+        for (auto it_m = prev_id_matches.begin(); it_m != prev_id_matches.end(); it_m++)
+        {
+            int curr_bbox_id = it_m->first;
+            int match_occurrance = it_m->second;
+            if (match_occurrance > max_occurrance)
+            {
+                max_occurrance = match_occurrance;
+                max_occurrance_curr_id = curr_bbox_id;
+            }
+        }
+        // assign bbBestMatches with the knowledge found above
+        bbBestMatches[prev_bbox_id] = max_occurrance_curr_id;
+    }
+
+
+    // (Debug) check if the bbBestMatches assignments make sense
+    printf("The best matches are (boxID in prev frame -> boxID in curr frame): \n");
+    for (auto it = bbBestMatches.begin(); it != bbBestMatches.end(); it++)
+    {
+        printf("%d -> %d.\n", it->first, it->second);
+    }
 }

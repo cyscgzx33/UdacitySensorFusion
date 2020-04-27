@@ -116,7 +116,7 @@ int main(int argc, const char *argv[])
         // remove Lidar points based on distance properties
         float minZ = -1.5, maxZ = -0.9, minX = 2.0, maxX = 20.0, maxY = 2.0, minR = 0.1; // focus on ego lane
         cropLidarPoints(lidarPoints, minX, maxX, maxY, minZ, maxZ, minR);
-    
+
         (dataBuffer.end() - 1)->lidarPoints = lidarPoints;
 
         cout << "#3 : CROP LIDAR POINTS done" << endl;
@@ -140,7 +140,7 @@ int main(int argc, const char *argv[])
         
         
         // REMOVE THIS LINE BEFORE PROCEEDING WITH THE FINAL PROJECT
-        continue; // skips directly to the next image without processing what comes beneath
+        // continue; // skips directly to the next image without processing what comes beneath
 
         /* DETECT IMAGE KEYPOINTS */
 
@@ -195,7 +195,6 @@ int main(int argc, const char *argv[])
 
         if (dataBuffer.size() > 1) // wait until at least two images have been processed
         {
-
             /* MATCH KEYPOINT DESCRIPTORS */
 
             vector<cv::DMatch> matches;
