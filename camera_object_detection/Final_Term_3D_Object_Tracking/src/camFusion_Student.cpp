@@ -166,7 +166,6 @@ void computeTTCLidar(std::vector<LidarPoint> &lidarPointsPrev,
         // Only considering Lidar points within a narrow corridor in ego lane
         if (it->y > laneWidth / 2.0 || it->y < -laneWidth / 2.0)
             continue;
-        printf("it->x = %f\n", it->x);
         lidarPointsPrevCopy.push_back(*it);
     }
     for (auto it = lidarPointsCurr.begin(); it != lidarPointsCurr.end(); ++it)
@@ -195,8 +194,8 @@ void computeTTCLidar(std::vector<LidarPoint> &lidarPointsPrev,
     minXCurr = lidarPointsCurrCopy[n_curr/50].x;
     
     // Debug
-    printf("---------------------------------------------\n");
-    printf("minXCurr = %f, minXPrev = %f\n", minXCurr, minXPrev);
+    // printf("---------------------------------------------\n");
+    // printf("minXCurr = %f, minXPrev = %f\n", minXCurr, minXPrev);
 
     /* Initial method w/o considering outliers */
     // for (auto it = lidarPointsPrev.begin(); it != lidarPointsPrev.end(); ++it)
