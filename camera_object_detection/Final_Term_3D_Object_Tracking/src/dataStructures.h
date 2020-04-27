@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include <unordered_map>
+#include <queue>
 #include <opencv2/core.hpp>
 
 struct LidarPoint { // single lidar point in space
