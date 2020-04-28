@@ -294,8 +294,8 @@ void computeTTCLidar(std::vector<LidarPoint> &lidarPointsPrev,
     // Step 3: compare the quantile point between prev frame and curr frame
     int n_prev = lidarPointsPrevCopy.size();
     int n_curr = lidarPointsCurrCopy.size();
-    minXPrev = lidarPointsPrevCopy[n_prev/50].x;
-    minXCurr = lidarPointsCurrCopy[n_curr/50].x;
+    minXPrev = lidarPointsPrevCopy[n_prev/50].x; // default: 2%
+    minXCurr = lidarPointsCurrCopy[n_curr/50].x; // default: 2%
 
     // Debug
     // printf("---------------------------------------------\n");
