@@ -72,12 +72,14 @@ plt.plot(x, y7_camera, '-o', label = "BRISK + ORB (0% inf)")
 
 plt.xlabel('X Axis - Image Series')
 # Set the y axis label of the current axis.
-plt.ylabel('T Axis - TTC [sec]')
+plt.ylabel('Y Axis - TTC [sec]')
 # Set a title of the current axes.
+# plt.title('Lidar-based TTC via Various Detector/Descriptor Combinations')
 plt.title('Camera-based TTC via Various Detector/Descriptor Combinations')
 # show a legend on the plot
 plt.legend()
 # set ylim
+# plt.ylim(0, 65)
 plt.ylim(-250, 210)
 # Display a figure.
 plt.show()

@@ -11,8 +11,14 @@
 | Step 1 | ![Ransac 2D](media/step1_lidar_point_cloud.png)  | ![Ransac 3D](media/step1_camera_output.png) |
 | Step 2 | ![RANSAC 2D source code](media/step_2_lidar_point_cloud.png) | ![RANSAC 3D source code](media/step_2_camera_output.png) |
 
-### Evaluation 2: Example about 
+### Evaluation 2: Analysis Performance of Camera TTC via Various Combinations of Detector / Descriptor
+* A series of experiments have been conducted and a graph has been obtained to illustrate the findings. According to the graph, one can evaluate the distribution of TTC values. Note some of them has value **`+/-inf`** (also in the graph, a percentage of `inf` has been analyzed), as invalid output has been detected. The main reason is that the specific detector / descriptor combination is not appropriate to extract and match the keypoints very well, which means one should avoid those combinations in the TTC calculation.
+* In conclusion, **`SHITOMASI` + `BRIEF`** is the best combination in terms of TTC calculation, while **`FAST` + `BRIEF`** might be a good alternative, as shown in the left graph (refer [the python script](src/compare_camera_results.py) for source code of the graph). The rest of the choices are either involved with too many invalid detections or too high uncertainties, due to bad detection, description or matching, which makes them imappropriate to conduct the job of TTC calculation.
+* In addition, compared to lidar based TTC calculation as is shown in the right side, camera based technologies have higher uncertainty, which is esentially dependent on different combinations of detector / descriptor.
 
+| Camera based TTC | Lidar based TTC |
+| --- | --- |
+| ![combinations camera](media/camera_ttc_comparison_differen_combinations.png) | ![combinations lidar](media/lidar_ttc_comparison_differen_combinations.png) |
 # Background
 Welcome to the final project of the camera course. By completing all the lessons, you now have a solid understanding of keypoint detectors, descriptors, and methods to match them between successive images. Also, you know how to detect objects in an image using the YOLO deep-learning framework. And finally, you know how to associate regions in a camera image with Lidar points in 3D space. Let's take a look at our program schematic to see what we already have accomplished and what's still missing.
 
