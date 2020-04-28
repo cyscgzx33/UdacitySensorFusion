@@ -72,8 +72,8 @@ int main(int argc, const char *argv[])
     double sensorFrameRate = 10.0 / imgStepWidth; // frames per second for Lidar and camera
     int dataBufferSize = 2;       // no. of images which are held in memory (ring buffer) at the same time
     vector<DataFrame> dataBuffer; // list of data frames which are held in memory at the same time
-    bool bVis = true;            // visualize results
-
+    bool bVis = false;            // visualize results    
+    vector<double> ttc_camera_list, ttc_lidar_list; // for TTC performance analysis
     /* MAIN LOOP OVER ALL IMAGES */
 
     for (size_t imgIndex = 0; imgIndex <= imgEndIndex - imgStartIndex; imgIndex+=imgStepWidth)
@@ -129,7 +129,7 @@ int main(int argc, const char *argv[])
         clusterLidarWithROI((dataBuffer.end()-1)->boundingBoxes, (dataBuffer.end() - 1)->lidarPoints, shrinkFactor, P_rect_00, R_rect_00, RT);
 
         // Visualize 3D objects
-        bVis = true;
+        bVis = false;
         if(bVis)
         {
             show3DObjects((dataBuffer.end()-1)->boundingBoxes, cv::Size(4.0, 20.0), cv::Size(1000, 1000), true); // change size from 2000 to 1000 because too large
@@ -150,7 +150,7 @@ int main(int argc, const char *argv[])
 
         // extract 2D keypoints from current image
         vector<cv::KeyPoint> keypoints; // create empty feature list for current image
-        string detectorType = "SHITOMASI"; // default: "SHITOMASI"
+        string detectorType = "FAST"; // default: "SHITOMASI"
                                            // good choices: "SHITOMASI"
 
         if (detectorType.compare("SHITOMASI") == 0)
@@ -199,7 +199,6 @@ int main(int argc, const char *argv[])
 
         cout << "#6 : EXTRACT DESCRIPTORS done" << endl;
 
-
         if (dataBuffer.size() > 1) // wait until at least two images have been processed
         {
             /* MATCH KEYPOINT DESCRIPTORS */
@@ -233,7 +232,6 @@ int main(int argc, const char *argv[])
             cout << "#8 : TRACK 3D OBJECT BOUNDING BOXES done" << endl;
 
             /* COMPUTE TTC ON OBJECT IN FRONT */
-
             // loop over all BB match pairs
             for (auto it1 = (dataBuffer.end() - 1)->bbMatches.begin(); it1 != (dataBuffer.end() - 1)->bbMatches.end(); ++it1)
             {
@@ -262,6 +260,7 @@ int main(int argc, const char *argv[])
                     //// TASK FP.2 -> compute time-to-collision based on Lidar data (implement -> computeTTCLidar)
                     double ttcLidar; 
                     computeTTCLidar(prevBB->lidarPoints, currBB->lidarPoints, sensorFrameRate, ttcLidar);
+                    ttc_lidar_list.push_back(ttcLidar);
                     //// EOF STUDENT ASSIGNMENT
 
                     //// STUDENT ASSIGNMENT
@@ -270,9 +269,10 @@ int main(int argc, const char *argv[])
                     double ttcCamera;
                     clusterKptMatchesWithROI(*currBB, (dataBuffer.end() - 2)->keypoints, (dataBuffer.end() - 1)->keypoints, (dataBuffer.end() - 1)->kptMatches);                    
                     computeTTCCamera((dataBuffer.end() - 2)->keypoints, (dataBuffer.end() - 1)->keypoints, currBB->kptMatches, sensorFrameRate, ttcCamera);
+                    ttc_camera_list.push_back(ttcCamera);
                     //// EOF STUDENT ASSIGNMENT
 
-                    bVis = true;
+                    bVis = false;
                     if (bVis)
                     {
                         cv::Mat visImg = (dataBuffer.end() - 1)->cameraImg.clone();
@@ -294,9 +294,23 @@ int main(int argc, const char *argv[])
                 } // eof TTC computation
             } // eof loop over all BB matches            
 
-        }
-
+        } // eof if (dataBuffer.size() > 1)
     } // eof loop over all images
 
+    // process TTC performance analysis
+    double ttc_sum_camera = 0.0, ttc_sum_lidar = 0.0;
+    cout << "TTC camera output is : ";
+    for (auto ttc_camera : ttc_camera_list)
+    {
+        ttc_sum_camera += ttc_camera;
+        cout << ttc_camera << ", ";
+    }
+    cout << "\nTTC lidar output is : ";
+    for (auto ttc_lidar : ttc_lidar_list)
+    {
+        ttc_sum_lidar += ttc_lidar;
+        cout << ttc_lidar << ", ";
+    }
+    cout << endl;
     return 0;
 }
