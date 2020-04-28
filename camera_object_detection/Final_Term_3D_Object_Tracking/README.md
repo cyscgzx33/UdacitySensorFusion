@@ -14,7 +14,7 @@
 ### Evaluation 2: Analysis Performance of Camera TTC via Various Combinations of Detector / Descriptor
 * A series of experiments have been conducted and a graph has been obtained to illustrate the findings. According to the graph, one can evaluate the distribution of TTC values. Note some of them has value **`+/-inf`** (also in the graph, a percentage of `inf` has been analyzed), as invalid output has been detected. The main reason is that the specific detector / descriptor combination is not appropriate to extract and match the keypoints very well, which means one should avoid those combinations in the TTC calculation.
 * In conclusion, **`SHITOMASI` + `BRIEF`** is the best combination in terms of TTC calculation, while **`FAST` + `BRIEF`** might be a good alternative, as shown in the left graph (refer [the python script](src/compare_camera_results.py) for source code of the graph). The rest of the choices are either involved with too many invalid detections or too high uncertainties, due to bad detection, description or matching, which makes them imappropriate to conduct the job of TTC calculation.
-* In addition, compared to lidar based TTC calculation as is shown in the right side, camera based technologies have higher uncertainty, which is esentially dependent on different combinations of detector / descriptor.
+* In addition, lidar based TTC calculation as is shown in the right side, because it is not relevant to keypoint detection and description, the TTC calculation stays same among all the combinations, which makes sense according to our normal thoughts.
 
 | Camera based TTC | Lidar based TTC |
 | --- | --- |
