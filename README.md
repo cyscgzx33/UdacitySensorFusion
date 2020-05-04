@@ -3,8 +3,9 @@ Course metrials and projects of Udacity Sensor Fusion Nanodegree Program.
 
 
 ## Lidar Obstacle Detection
-<img src="lidar_obstacle_detection/media/process-lidar-raw.gif" width="420" height="240" />
-<img src="lidar_obstacle_detection/media/process-lidar-bbox.gif" width="420" height="240" />
+| Lidar Point Clouds Input | 3D Tracked Objects w/ Bounding Boxes |
+| --- | --- |
+| ![Raw input](lidar_obstacle_detection/media/process-lidar-raw.gif) | ![Tracked result](lidar_obstacle_detection/media/process-lidar-bbox.gif) |
 
 * Contained in the folder [lidar_obstacle_detection](lidar_obstacle_detection/)
 * Implemented a 3D lidar object detection, which contains several classical algoirthm:
@@ -18,11 +19,12 @@ Course metrials and projects of Udacity Sensor Fusion Nanodegree Program.
 | Result | ![Ransac 2D](lidar_obstacle_detection/media/ransac-2d-line-fitting.png)  | ![Ransac 3D](lidar_obstacle_detection/media/ransac-3d-plane-fitting.png) | ![Kdtree 2D](lidar_obstacle_detection/media/Kd-tree-clustering.png) |
 | Source code | [RANSAC 2D source code](lidar_obstacle_detection/src/quiz/ransac/ransac2d.cpp) | [RANSAC 3D source code](lidar_obstacle_detection/src/quiz/ransac/ransac3d.cpp) | [Kd-tree source code](lidar_obstacle_detection/src/quiz/cluster/kdtree.h) |
 
-## Camera
-<img src="camera_object_detection/media/ttc_rendering_3.gif" width = "770" height="440" />
-<img src="camera_object_detection/Mid_Term_Proj_2D_Feature_Tracking/images/keypoints.png" width = "420" height = "126"/>
-<img src="camera_object_detection/media/camera_detection.png" width = "420" height="138" />
-
+## Camera Object Detection
+| Items | Images |
+| --- | --- |
+| TTC Calculation based on 3D Object Detection | ![TTC](camera_object_detection/media/ttc_rendering_3.gif) |
+| 2D Image Keypoints Detection| ![keypoint](camera_object_detection/Mid_Term_Proj_2D_Feature_Tracking/images/keypoints.png) |
+| 3D Object Detection via YOLOv3 | ![obejct detection](camera_object_detection/media/camera_detection.png) | 
 
 * 2D Feature Tracking
     * Implemented classic image feature detection, description as well as matching within `OpenCV`:
