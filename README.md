@@ -18,7 +18,7 @@ Course metrials and projects of Udacity Sensor Fusion Nanodegree Program.
 | --- | --- | --- | --- |
 | Result | ![Ransac 2D](lidar_obstacle_detection/media/ransac-2d-line-fitting.png)  | ![Ransac 3D](lidar_obstacle_detection/media/ransac-3d-plane-fitting.png) | ![Kdtree 2D](lidar_obstacle_detection/media/Kd-tree-clustering.png) |
 | Source code | [RANSAC 2D source code](lidar_obstacle_detection/src/quiz/ransac/ransac2d.cpp) | [RANSAC 3D source code](lidar_obstacle_detection/src/quiz/ransac/ransac3d.cpp) | [Kd-tree source code](lidar_obstacle_detection/src/quiz/cluster/kdtree.h) |
-
+---
 ## Camera Object Detection
 | Items | Images |
 | --- | --- |
@@ -43,5 +43,6 @@ Course metrials and projects of Udacity Sensor Fusion Nanodegree Program.
 | Camera based TTC | Lidar based TTC |
 | --- | --- |
 | ![combinations camera](camera_object_detection/Final_Term_3D_Object_Tracking/media/camera_ttc_comparison_differen_combinations.png) | ![combinations lidar](camera_object_detection/Final_Term_3D_Object_Tracking/media/lidar_ttc_comparison_differen_combinations.png) |
+---
 ## Radar
 * On-going
