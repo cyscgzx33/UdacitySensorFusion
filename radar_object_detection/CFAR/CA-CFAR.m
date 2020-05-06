@@ -7,7 +7,8 @@ close all;
 Ns = 1000;
 
 % Generate random noise
-s=randn(Ns,1);
+% Note: s is a cell type!
+s = randn(Ns,1);
 
 %Targets location. Assigning bin 100, 200, 300 and 700 as Targets with the amplitudes of 8, 9, 4, 11.
 s([100 ,200, 300, 700])=[8 9 4 11];
@@ -23,8 +24,8 @@ plot(s);
 T = 3;
 G = 1;
 
-% Offset : Adding room above noise threshold for desired SNR 
-offset=3;
+% Scale: introducing room above noise threshold for desired SNR 
+scale = 3;
 
 % Vector to hold threshold values 
 threshold_cfar = [];
@@ -35,30 +36,33 @@ signal_cfar = [];
 % 2. Slide window across the signal length
 for i = 1:(Ns-(G+T))     
 
-    curr_noise = 0;
     % 2. - 5. Determine the noise threshold by measuring it within the training cells
+    curr_noise = 0;
     % 2. Start sliding the window
     for j = i : i + 2 *(G + T) + 1
         % Only process information in T cells
-        if j < 2 * G + T + 1 + i and j > T + i
+        if j < 2 * G + T + 1 + i && j > T + i
             continue;
         end
-
         % 3. Sum the signal (noise) within all the leading or lagging training cells
-        curr_noise = curr_noise + s[j];
+        curr_noise = curr_noise + s([j]);
     end
 
     % 4. Averaging the sum to determine the noise threshold
     avg_noise = curr_noise / (2 * T); 
 
     % 5. Using an appropriate offset value scale the threshold
-    threshold_cfar = avg_noise + offset;
+    threshold_cfar = [threshold_cfar, {avg_noise * scale}];
 
     % 6. Measuring the signal within the CUT (Cell Under Test)
     pos_CUT = i + T + G + 1;
-    CUT = s[pos_CUT];
+    CUT = s([pos_CUT]);
 
     % 8. Filter the signal above the threshold
+    signal = CUT;
+    if CUT < avg_noise * scale
+        signal = 0;
+    end
 
     signal_cfar = [signal_cfar, {signal}];
 end
