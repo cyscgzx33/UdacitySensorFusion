@@ -7,6 +7,8 @@ close all;
 Ns = 1000;
 
 % Generate random noise
+% Note: in the solution, the random generator is set to obtain abs(.), however it is not proper to use abs(.)
+%       thus, in the scale part, I also added offset to balance the negative influence
 s = randn(Ns,1);
 
 %Targets location. Assigning bin 100, 200, 300 and 700 as Targets with the amplitudes of 8, 9, 4, 11.
@@ -20,11 +22,12 @@ plot(s);
 % 1. Define the following:
 % 1a. Training Cells
 % 1b. Guard Cells 
-T = 7;
-G = 3;
+T = 14;
+G = 8;
 
 % Scale: introducing room above noise threshold for desired SNR 
 scale = 5;
+offset = 5;
 
 % Vector to hold threshold values 
 threshold_cfar = [];
@@ -33,7 +36,6 @@ threshold_cfar = [];
 signal_cfar = [];
 
 % 2. Slide window across the signal length
-% for i = 1:(Ns-(G+T)) % modify the range
 for i = 1 : (Ns - (2 * (G + T) + 1))
 
     % 2. - 5. Determine the noise threshold by measuring it within the training cells
@@ -50,18 +52,24 @@ for i = 1 : (Ns - (2 * (G + T) + 1))
 
     % 4. Averaging the sum to determine the noise threshold
     avg_noise = curr_noise / (2 * T); 
+    threshold = avg_noise * scale + offset;
 
     % 5. Using an appropriate offset value scale the threshold
-    threshold_cfar = [threshold_cfar, {avg_noise * scale}];
+    threshold_cfar = [threshold_cfar, {threshold}];
 
     % 6. Measuring the signal within the CUT (Cell Under Test)
-    pos_CUT = i + T + G + 1;
+    pos_CUT = i + T + G;
     CUT = s(pos_CUT);
 
     % 8. Filter the signal above the threshold
     signal = CUT;
-    if CUT < avg_noise * scale
+    if CUT < threshold
         signal = 0;
+    end
+    % Notification at detection
+    if signal > 0
+        disp(signal);
+        disp(threshold);
     end
 
     signal_cfar = [signal_cfar, {signal}];
