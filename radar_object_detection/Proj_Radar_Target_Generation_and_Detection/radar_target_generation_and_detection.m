@@ -15,6 +15,7 @@ max_vel     = 100.0;
 
 % speed of light = 3e8 [m/s]
 c = 3e8;
+
 %% User Defined Range and Velocity of target
 % *%TODO* (done):
 % define the target's initial position and velocity. 
@@ -33,69 +34,73 @@ T_chirp = 5.5 * 2 * max_range / c;
 Slope   = B / T_chirp;
 
 % Operating carrier frequency of Radar 
-fc = 77e9;             % carrier freq
+fc = 77e9;  % carrier freq
+                                            
+% The number of chirps in one sequence. Its ideal to have 2^ value for the ease of running the FFT
+% for Doppler Estimation. 
+Nd = 128;   % #of doppler cells OR #of sent periods % number of chirps
 
-                                                          
-%The number of chirps in one sequence. Its ideal to have 2^ value for the ease of running the FFT
-%for Doppler Estimation. 
-Nd=128;                   % #of doppler cells OR #of sent periods % number of chirps
+% The number of samples on each chirp. 
+Nr = 1024;  %for length of time OR # of range cells
 
-%The number of samples on each chirp. 
-Nr=1024;                  %for length of time OR # of range cells
+% Timestamp for running the displacement scenario for every sample on each chirp
+t  = linspace(0,Nd*Tchirp,Nr*Nd); %total time for samples
 
-% Timestamp for running the displacement scenario for every sample on each
-% chirp
-t=linspace(0,Nd*Tchirp,Nr*Nd); %total time for samples
+% Creating the vectors for Tx, Rx and Mix based on the total samples input.
+Tx  = zeros(1,length(t)); % transmitted signal
+Rx  = zeros(1,length(t)); % received signal
+Mix = zeros(1,length(t)); % beat signal
 
-
-%Creating the vectors for Tx, Rx and Mix based on the total samples input.
-Tx=zeros(1,length(t)); %transmitted signal
-Rx=zeros(1,length(t)); %received signal
-Mix = zeros(1,length(t)); %beat signal
-
-%Similar vectors for range_covered and time delay.
-r_t=zeros(1,length(t));
-td=zeros(1,length(t));
-
+% Similar vectors for range_covered and time delay.
+r_t = zeros(1,length(t)); % - Question: what is "range_covered"? 
+                          % - Ans: maybe it's meaning the range detected of object versus time
+td  = zeros(1,length(t)); % - Question: why time delay are always 0? 
+                          % - Ans: maybe waiting for updating later
 
 %% Signal generation and Moving Target simulation
 % Running the radar scenario over the time. 
 
 for i=1:length(t)         
-    
-    
-    % *%TODO* :
-    %For each time stamp update the Range of the Target for constant velocity. 
-    
-    % *%TODO* :
-    %For each time sample we need update the transmitted and
-    %received signal. 
-    Tx(i)  = 
-    Rx(i)  =
-    
-    % *%TODO* :
-    %Now by mixing the Transmit and Receive generate the beat signal
-    %This is done by element wise matrix multiplication of Transmit and
-    %Receiver Signal
-    Mix(i) = 
-    
+
+    % Define some intermediate parameters
+    fc    = freq_op;
+    alpha = Slope;
+
+    % *%TODO* (done):
+    % For each time stamp update the Range of the Target for constant velocity.
+    if i == 1
+        r_t(i) = init_position_target;
+    else
+        r_t(i) = r_t(i-1) + init_velocity_target * (t(i) - t(i-1)); % const vel
+    end 
+    td(i)  = r_t(i) * 2 / c; % td(i) is the radar signal trip time
+
+    % *%TODO* (done):
+    % For each time sample we need update the transmitted and received signal. 
+    Tx(i)  = cos(2 * pi * (fc * t(i) + alpha * t(i)^2 / 2));
+    Rx(i)  = cos(2 * pi * (fc * (t(i) - td(i)) + alpha * (t(i) - td(i))^2 / 2));
+
+    % *%TODO* (done):
+    % Now by mixing the Transmit and Receive generate the beat signal
+    % This is done by element wise matrix multiplication of Transmit and Receiver Signal
+    Mix(i) = Tx(i) .* Rx(i);
+
 end
 
+
 %% RANGE MEASUREMENT
-
-
- % *%TODO* :
+% *%TODO* :
 %reshape the vector into Nr*Nd array. Nr and Nd here would also define the size of
 %Range and Doppler FFT respectively.
 
- % *%TODO* :
+% *%TODO* :
 %run the FFT on the beat signal along the range bins dimension (Nr) and
 %normalize.
 
- % *%TODO* :
+% *%TODO* :
 % Take the absolute value of FFT output
 
- % *%TODO* :
+% *%TODO* :
 % Output of FFT is double sided signal, but we are interested in only one side of the spectrum.
 % Hence we throw out half of the samples.
 
