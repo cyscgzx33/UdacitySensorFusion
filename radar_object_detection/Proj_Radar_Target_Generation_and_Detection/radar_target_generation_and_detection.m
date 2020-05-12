@@ -20,8 +20,8 @@ c = 3e8;
 % *%TODO* (done):
 % define the target's initial position and velocity. 
 % Note : Velocity remains contant
-init_position_target = 10; % target initial position x = 10 [m]
-init_velocity_target = 20; % target initial velocity vx = 10 [m/s]
+init_position_target = 110; % target initial position x  = 110 [m]
+init_velocity_target = -20; % target initial velocity vx = -20 [m/s]
 
 %% FMCW Waveform Generation
 
@@ -90,14 +90,14 @@ end
 
 %% RANGE MEASUREMENT
 % *%TODO* (done):
-% Reshape the vector into Nr * Nd array. 
+% Reshape the vector into [Nr, Nd] array. 
 % Nr and Nd here would also define the size of Range and Doppler FFT respectively.
-Mix_reshaped = reshape(Mix, [1, Nr * Nd]); % How to reshape, like this, reshape(Mix,[Nr,Nd]); ???
+Mix_reshaped = reshape(Mix, [Nr, Nd]);
 
 % *%TODO* (done):
 % Run the FFT on the beat signal along the range bins dimension (Nr) and normalize.
-sig_fft = fft(Mix_reshaped); % How to run along the range bins dimension (Nr) ???
-sig_fft = sig_fft / norm(sig_fft);
+sig_fft = fft(Mix_reshaped, Nr);
+sig_fft = sig_fft./Nr;
 
 % *%TODO* (done):
 % Take the absolute value of FFT output
@@ -109,17 +109,14 @@ sig_fft = abs(sig_fft);
 L = length(t);
 sig_fft = sig_fft(1 : L/2 + 1);
 
-
 %plotting the range
 figure ('Name','Range from First FFT')
 subplot(2,1,1)
 
 % *%TODO* (done):
 % plot FFT output 
-
- 
+plot(sig_fft)
 axis ([0 200 0 1]);
-
 
 
 %% RANGE DOPPLER RESPONSE
@@ -194,7 +191,7 @@ noise_level = zeros(1,1);
 %than the Range Doppler Map as the CUT cannot be located at the edges of
 %matrix. Hence,few cells will not be thresholded. To keep the map size same
 % set those values to 0. 
- 
+
 
 
 
