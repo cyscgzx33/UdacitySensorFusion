@@ -41,10 +41,10 @@ fc = 77e9;  % carrier freq
 Nd = 128;   % #of doppler cells OR #of sent periods % number of chirps
 
 % The number of samples on each chirp. 
-Nr = 1024;  %for length of time OR # of range cells
+Nr = 1024;  % for length of time OR # of range cells
 
 % Timestamp for running the displacement scenario for every sample on each chirp
-t  = linspace(0,Nd*Tchirp,Nr*Nd); %total time for samples
+t  = linspace(0, Nd*T_chirp, Nr*Nd); % total time for samples
 
 % Creating the vectors for Tx, Rx and Mix based on the total samples input.
 Tx  = zeros(1,length(t)); % transmitted signal
@@ -89,28 +89,33 @@ end
 
 
 %% RANGE MEASUREMENT
-% *%TODO* :
-%reshape the vector into Nr*Nd array. Nr and Nd here would also define the size of
-%Range and Doppler FFT respectively.
+% *%TODO* (done):
+% Reshape the vector into Nr * Nd array. 
+% Nr and Nd here would also define the size of Range and Doppler FFT respectively.
+Mix_reshaped = reshape(Mix, [1, Nr * Nd]); % How to reshape, like this, reshape(Mix,[Nr,Nd]); ???
 
-% *%TODO* :
-%run the FFT on the beat signal along the range bins dimension (Nr) and
-%normalize.
+% *%TODO* (done):
+% Run the FFT on the beat signal along the range bins dimension (Nr) and normalize.
+sig_fft = fft(Mix_reshaped); % How to run along the range bins dimension (Nr) ???
+sig_fft = sig_fft / norm(sig_fft);
 
-% *%TODO* :
+% *%TODO* (done):
 % Take the absolute value of FFT output
+sig_fft = abs(sig_fft);
 
-% *%TODO* :
-% Output of FFT is double sided signal, but we are interested in only one side of the spectrum.
+% *%TODO* (done):
+% Output of FFT is double sided signal, but we are interested in only one side of the spectrum. 
 % Hence we throw out half of the samples.
+L = length(t);
+sig_fft = sig_fft(1 : L/2 + 1);
 
 
 %plotting the range
 figure ('Name','Range from First FFT')
 subplot(2,1,1)
 
- % *%TODO* :
- % plot FFT output 
+% *%TODO* (done):
+% plot FFT output 
 
  
 axis ([0 200 0 1]);
