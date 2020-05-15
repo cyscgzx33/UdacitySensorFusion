@@ -1,6 +1,9 @@
 clear all
 clc;
 
+%% If using Octave %%
+% pkg load signal
+
 %% Radar Specifications 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Frequency of operation = 77GHz
@@ -142,8 +145,8 @@ sig_fft2 = fftshift (sig_fft2);
 RDM = abs(sig_fft2);
 RDM = 10 * log10(RDM) ;
 
-%use the surf function to plot the output of 2DFFT and to show axis in both
-%dimensions
+% use the surf function to plot the output of 2DFFT and to show axis in both
+% dimensions
 doppler_axis = linspace(-100, 100, Nd);
 range_axis = linspace(-200,200,Nr/2) * ((Nr/2)/400);
 figure,surf(doppler_axis, range_axis, RDM);
@@ -154,25 +157,25 @@ figure,surf(doppler_axis, range_axis, RDM);
 
 % *%TODO* (done):
 % Select the number of Training Cells in both the dimensions.
-T_range   = 12;
-T_doppler = 14;
+Tr = 12;
+Td = 14;
 
 % *%TODO* (done):
 % Select the number of Guard Cells in both dimensions around the Cell under 
 % test (CUT) for accurate estimation
-G_range   = 6;
-G_doppler = 8;
+Gr = 6;
+Gd = 8;
 
 % *%TODO* (done):
 % Offset the threshold by SNR value in dB
-SNR       = 5; % Is it correct to do so???
+SNR = 5; % Is it correct to do so???
 
 % *%TODO* (done):
 % Create a vector to store noise_level for each iteration on training cells
 noise_level = zeros(1,1);
 
 
-% *%TODO* :
+% *%TODO* (done):
 % Design a loop such that it slides the CUT across range doppler map by
 % giving margins at the edges for Training and Guard Cells.
 % For every iteration sum the signal level within all the training
@@ -182,31 +185,48 @@ noise_level = zeros(1,1);
 % Further add the offset to it to determine the threshold. Next, compare the
 % signal under CUT with this threshold. If the CUT level > threshold assign
 % it a value of 1, else equate it to 0.
-for i = 1 : 
+% Note: db2pow() and pow2db() are both Matlab built-in functions
+Nr = Nr / 2;
+sig_cfar2d = zeros(Nr, Nd);
+for i = 1 : (Nr - (2 * (Gr + Tr) + 1))
 
-   % Use RDM[x,y] as the matrix from the output of 2D FFT for implementing
-   % CFAR
+    for j = 1 : (Nd - (2 * (Gd + Td) + 1))
+        % Use RDM[x,y] as the matrix from the output of 2D FFT for implementing
+        % CFAR
+        noise_db_outer  = RDM(i:i+2*(Gr+Tr)+1, j:j+2*(Gd+Td)+1);
+        noise_pow_outer = db2pow(noise_db_outer);
+        noise_db_inner  = RDM(i+Tr:i+Gr+2*Tr+1, j+Td:j+Gd+2*Td+1);
+        noise_pow_inner = db2pow(noise_db_inner);
+        
+        % Calculate the sum
+        % Note: in matlab, one can use sum(x, 'all'), while in Octave one cannot
+        noise_level_pow = sum(sum(noise_pow_outer)) - sum(sum(noise_pow_inner));
+        
+        % Number of training cells
+        n_cells_t = (2*(Gr + Tr) + 1) * (2*(Gd + Td) + 1) - (Gr + Tr + 1) * (Gd + Td + 1);
 
+        % Average noise level
+        avg_noise_pow = noise_level_pow / n_cells_t;
+        ave_noise_db  = pow2db(avg_noise_pow);
 
+        % Offset the threshold
+        threshold = ave_noise_db + SNR;
+        
+        % *%TODO* (done):
+        % The process above will generate a thresholded block, which is smaller 
+        % than the Range Doppler Map as the CUT cannot be located at the edges of
+        % matrix. Hence,few cells will not be thresholded. To keep the map size same
+        % set those values to 0. 
+        
+        % Assign the valid signal to CUT
+        if RDM(i + Tr + Gr, j + Td + Gd) > threshold
+            sig_cfar2d(i + Tr + Gr, j + Td + Gd) = 1;
+        end
+    end
+end
 
-
-
-% *%TODO* :
-% The process above will generate a thresholded block, which is smaller 
-% than the Range Doppler Map as the CUT cannot be located at the edges of
-% matrix. Hence,few cells will not be thresholded. To keep the map size same
-% set those values to 0. 
-
-
-
-
-
-
-
-
-
-% *%TODO* :
+% *%TODO* (done):
 % Display the CFAR output using the Surf function like we did for Range
 % Doppler Response output.
-figure,surf(doppler_axis, range_axis, 'replace this with output');
+figure,surf(doppler_axis, range_axis, sig_cfar2d);
 colorbar;
