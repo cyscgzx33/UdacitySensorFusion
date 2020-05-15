@@ -114,7 +114,7 @@ sig_fft = sig_fft(1 : L/2 + 1);
 
 %plotting the range
 figure ('Name','Range from First FFT')
-subplot(2,1,1)
+% subplot(2,1,1)
 
 % *%TODO* (done):
 % plot FFT output 
@@ -149,8 +149,8 @@ RDM = 10 * log10(RDM) ;
 % dimensions
 doppler_axis = linspace(-100, 100, Nd);
 range_axis = linspace(-200,200,Nr/2) * ((Nr/2)/400);
-figure,surf(doppler_axis, range_axis, RDM);
-
+figure ('Name','Range and Velocity from 2D FFT')
+surf(doppler_axis, range_axis, RDM);
 %% CFAR implementation
 
 % Slide Window through the complete Range Doppler Map
@@ -197,11 +197,11 @@ for i = 1 : (Nr - (2 * (Gr + Tr) + 1))
         noise_pow_outer = db2pow(noise_db_outer);
         noise_db_inner  = RDM(i+Tr:i+Gr+2*Tr+1, j+Td:j+Gd+2*Td+1);
         noise_pow_inner = db2pow(noise_db_inner);
-        
+
         % Calculate the sum
         % Note: in matlab, one can use sum(x, 'all'), while in Octave one cannot
         noise_level_pow = sum(sum(noise_pow_outer)) - sum(sum(noise_pow_inner));
-        
+
         % Number of training cells
         n_cells_t = (2*(Gr + Tr) + 1) * (2*(Gd + Td) + 1) - (Gr + Tr + 1) * (Gd + Td + 1);
 
@@ -211,13 +211,13 @@ for i = 1 : (Nr - (2 * (Gr + Tr) + 1))
 
         % Offset the threshold
         threshold = ave_noise_db + SNR;
-        
+
         % *%TODO* (done):
         % The process above will generate a thresholded block, which is smaller 
         % than the Range Doppler Map as the CUT cannot be located at the edges of
         % matrix. Hence,few cells will not be thresholded. To keep the map size same
         % set those values to 0. 
-        
+
         % Assign the valid signal to CUT
         if RDM(i + Tr + Gr, j + Td + Gd) > threshold
             sig_cfar2d(i + Tr + Gr, j + Td + Gd) = 1;
@@ -228,5 +228,6 @@ end
 % *%TODO* (done):
 % Display the CFAR output using the Surf function like we did for Range
 % Doppler Response output.
-figure,surf(doppler_axis, range_axis, sig_cfar2d);
+figure ('Name','Filtered Range and Velocity from 2D CFAR')
+surf(doppler_axis, range_axis, sig_cfar2d);
 colorbar;
