@@ -188,6 +188,10 @@ noise_level = zeros(1,1);
 % Note: db2pow() and pow2db() are both Matlab built-in functions
 Nr = Nr / 2;
 sig_cfar2d = zeros(Nr, Nd);
+
+% Number of training cells
+n_cells_t = (2*(Gr + Tr) + 1) * (2*(Gd + Td) + 1) - (Gr + Tr + 1) * (Gd + Td + 1);
+
 for i = 1 : (Nr - (2 * (Gr + Tr) + 1))
 
     for j = 1 : (Nd - (2 * (Gd + Td) + 1))
@@ -201,9 +205,6 @@ for i = 1 : (Nr - (2 * (Gr + Tr) + 1))
         % Calculate the sum
         % Note: in matlab, one can use sum(x, 'all'), while in Octave one cannot
         noise_level_pow = sum(sum(noise_pow_outer)) - sum(sum(noise_pow_inner));
-
-        % Number of training cells
-        n_cells_t = (2*(Gr + Tr) + 1) * (2*(Gd + Td) + 1) - (Gr + Tr + 1) * (Gd + Td + 1);
 
         % Average noise level
         avg_noise_pow = noise_level_pow / n_cells_t;
