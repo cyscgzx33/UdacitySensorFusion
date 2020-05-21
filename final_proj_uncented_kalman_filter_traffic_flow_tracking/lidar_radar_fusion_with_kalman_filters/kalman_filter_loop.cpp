@@ -79,14 +79,14 @@ void filter(VectorXd &x, MatrixXd &P) {
     // TODO (done): YOUR CODE HERE
     // KF Measurement update step
     VectorXd y = z - H * x;
-    Q = H * P * H.transpose() + R;
-    VectorXd K = P * H.transpose() * Q.inverse();
+    MatrixXd S = H * P * H.transpose() + R;
+    VectorXd K = P * H.transpose() * S.inverse();
     x = x + K * y;
     P = (I - K * H) * P;
 
     // KF Prediction step
     x = F * x + u;
-    P = F * P * F.transpose();
+    P = F * P * F.transpose() + Q;
 
     cout << "x=" << endl <<  x << endl;
     cout << "P=" << endl <<  P << endl;
