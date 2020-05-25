@@ -174,3 +174,85 @@ void UKF::AugmentedSigmaPoints(MatrixXd* Xsig_out) {
   // write result
   *Xsig_out = Xsig_aug;
 }
+
+/**
+ * Programming assignment functions: 
+ */
+
+void UKF::SigmaPointPrediction(MatrixXd* Xsig_out) {
+
+  // set state dimension
+  int n_x = 5;
+
+  // set augmented dimension
+  int n_aug = 7;
+
+  // create example sigma point matrix
+  MatrixXd Xsig_aug = MatrixXd(n_aug, 2 * n_aug + 1);
+  Xsig_aug <<
+    5.7441,  5.85768,   5.7441,   5.7441,   5.7441,   5.7441,   5.7441,   5.7441,   5.63052,   5.7441,   5.7441,   5.7441,   5.7441,   5.7441,   5.7441,
+      1.38,  1.34566,  1.52806,     1.38,     1.38,     1.38,     1.38,     1.38,   1.41434,  1.23194,     1.38,     1.38,     1.38,     1.38,     1.38,
+    2.2049,  2.28414,  2.24557,  2.29582,   2.2049,   2.2049,   2.2049,   2.2049,   2.12566,  2.16423,  2.11398,   2.2049,   2.2049,   2.2049,   2.2049,
+    0.5015,  0.44339, 0.631886, 0.516923, 0.595227,   0.5015,   0.5015,   0.5015,   0.55961, 0.371114, 0.486077, 0.407773,   0.5015,   0.5015,   0.5015,
+    0.3528, 0.299973, 0.462123, 0.376339,  0.48417, 0.418721,   0.3528,   0.3528,  0.405627, 0.243477, 0.329261,  0.22143, 0.286879,   0.3528,   0.3528,
+         0,        0,        0,        0,        0,        0,  0.34641,        0,         0,        0,        0,        0,        0, -0.34641,        0,
+         0,        0,        0,        0,        0,        0,        0,  0.34641,         0,        0,        0,        0,        0,        0, -0.34641;
+
+  // create matrix with predicted sigma points as columns
+  MatrixXd Xsig_pred = MatrixXd(n_x, 2 * n_aug + 1);
+
+  double delta_t = 0.1; // time diff in sec
+
+  /**
+   * Student part begin
+   */
+  Xsig_pred.fill(0.0);
+
+  for (int i = 0; i < 2 * n_aug + 1; i++)
+  {
+    // predict sigma points
+    VectorXd x_col = VectorXd(n_x);
+    x_col.fill(0.0);
+
+    double px            =  Xsig_aug(0, i);
+    double py            =  Xsig_aug(1, i);
+    double v             =  Xsig_aug(2, i);
+    double phi           =  Xsig_aug(3, i);
+    double phi_dot       =  Xsig_aug(4, i);
+    double niu_a         =  Xsig_aug(5, i);
+    double niu_phi_ddot  =  Xsig_aug(6, i);
+
+    // avoid division by zero
+    if (fabs(phi_dot) < 0.001) // Note: must use fabs() for floating numbers !!!!!!!!!!!!!!!!!!!!!!
+                               //       abs(0.5) = 0, fabs(0.5) = 0.5
+    {
+        // Note: "1/2" for floating numbers must be written as "1.0/2.0" !!!!!!!!!!!!!!!!!!!!!!!
+        x_col(0) = px      + v * cos(phi) * delta_t + 1.0 / 2.0 * delta_t * delta_t * cos(phi) * niu_a;
+        x_col(1) = py      + v * sin(phi) * delta_t + 1.0 / 2.0 * delta_t * delta_t * sin(phi) * niu_a;
+        x_col(2) = v       + delta_t * niu_a;
+        x_col(3) = phi     + 0.5 * delta_t * delta_t * niu_phi_ddot;
+        x_col(4) = phi_dot + delta_t * niu_phi_ddot;
+    }
+    else
+    {
+        // Note: "1/2" for floating numbers must be written as "1.0/2.0" !!!!!!!!!!!!!!!!!!!!!!!
+        x_col(0) = px      + v / phi_dot * ( sin(phi + phi_dot * delta_t) - sin(phi) ) + 1.0 / 2.0 * delta_t * delta_t * cos(phi) * niu_a;
+        x_col(1) = py      + v / phi_dot * ( -cos(phi + phi_dot * delta_t) + cos(phi) )  + 1.0 / 2.0 * delta_t * delta_t * sin(phi) * niu_a;
+        x_col(2) = v       + delta_t * niu_a;
+        x_col(3) = phi     + phi_dot * delta_t + 1.0 / 2.0 * delta_t * delta_t * niu_phi_ddot;
+        x_col(4) = phi_dot + delta_t * niu_phi_ddot;
+    }
+
+    // write predicted sigma points into right column
+    Xsig_pred.col(i) = x_col;
+  }
+  /**
+   * Student part end
+   */
+
+  // print result
+  std::cout << "Xsig_pred = " << std::endl << Xsig_pred << std::endl;
+
+  // write result
+  *Xsig_out = Xsig_pred;
+}
