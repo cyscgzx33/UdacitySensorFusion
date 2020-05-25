@@ -58,14 +58,18 @@ VectorXd CalculateRMSE(const vector<VectorXd> &estimations,
     return rmse;
 
   // TODO (done): accumulate squared residuals
-  for (int i=0; i < estimations.size(); ++i) {
-    // ... your code here
-    
+  for (int i = 0; i < estimations.size(); ++i) {
+    VectorXd residual = estimations[i] - ground_truth[i];
+    residual = residual.array() * residual.array();
+    rmse += residual;
   }
 
-  // TODO: calculate the mean
+  // TODO (done): calculate the mean
+  int num_estimations = estimations.size();
+  rmse /= num_estimations;
 
-  // TODO: calculate the squared root
+  // TODO (done): calculate the squared root
+  rmse = rmse.array().sqrt();
 
   // return the result
   return rmse;
