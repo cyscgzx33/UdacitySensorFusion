@@ -41,6 +41,24 @@ class UKF {
    */
   void UpdateRadar(MeasurementPackage meas_package);
 
+  /**
+   * Augement sigma points to include prediction error
+   * @param Xsig_out The output augmented sigma point x signal matrix
+   */
+  void AugmentedSigmaPoints(MatrixXd* Xsig_out);
+
+  /**
+   * Predict sigma points using the motion model
+   * @param Xsig_in The input augmened sigma point x signal matrix
+   */
+  void SigmaPointPrediction(MatrixXd* Xsig_in);
+
+  /**
+   * Predict mean and covariance
+   * @param x_out The output predicted mean of sigma point x signal
+   * @param P_out The output predicted covariance of sigma point x signal
+   */
+  void PredictMeanAndCovariance(VectorXd* x_out, MatrixXd* P_out);
 
   // initially set to false, set to true in first call of ProcessMeasurement
   bool is_initialized_;
