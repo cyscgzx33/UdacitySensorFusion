@@ -89,10 +89,10 @@ UKF::UKF() {
   }
 
   // Process noise standard deviation longitudinal acceleration in m/s^2
-  std_a_ = 0.2;
+  std_a_ = 5.6;
 
   // Process noise standard deviation yaw acceleration in rad/s^2
-  std_yawdd_ = 0.2;
+  std_yawdd_ = 0.3;
 
   std::cout << "UKF constructor called!\n"; 
 }
@@ -113,6 +113,12 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
           0.0, 
           0.0,
           0.0;
+
+    P_ << 0.01, 0,    0,    0,       0,
+          0,    0.01, 0,    0,       0,
+          0,    0,    10,   0,       0,
+          0,    0,    0,    0.001,   0,
+          0,    0,    0,    0,       0.01;
 
     time_us_ = meas_package.timestamp_;
     is_initialized_ = true;
@@ -214,7 +220,7 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
   VectorXd z_pred = VectorXd(n_z);
 
   // create matrix for predicted measurement covariance
-  MatrixXd S = MatrixXd(n_z,n_z);
+  MatrixXd S = MatrixXd(n_z, n_z);
 
   // call the function to assign the predicted measurement, measurement covariance
   // and matrix with sigma points in measurement space
@@ -228,9 +234,7 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
   MatrixXd T = MatrixXd(n_x_, n_z);
 
   for (int i = 0; i < 2 * n_aug_ + 1; i++)
-  {
     T += weights_(i) * (Xsig_pred.col(i) - x) * (Zsig.col(i) - z_pred).transpose();
-  }
 
   // calculate Kalman gain K;
   MatrixXd K = MatrixXd(n_x_, n_z);

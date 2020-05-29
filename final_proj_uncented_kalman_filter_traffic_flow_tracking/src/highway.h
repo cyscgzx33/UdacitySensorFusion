@@ -7,8 +7,7 @@
 
 class Highway
 {
-public:
-
+  public:
 	std::vector<Car> traffic;
 	Car egoCar;
 	Tools tools;
@@ -26,8 +25,8 @@ public:
 	bool visualize_radar = true;
 	bool visualize_pcd = false;
 	// Predict path in the future using UKF
-	double projectedTime = 2;
-	int projectedSteps = 6;
+	double projectedTime = 3; // default: 2
+	int projectedSteps = 8;   // default: 6
 	// --------------------------------
 
 	Highway(pcl::visualization::PCLVisualizer::Ptr& viewer)
@@ -116,6 +115,7 @@ public:
 		renderHighway(egoVelocity*timestamp/1e6, viewer);
 		egoCar.render(viewer);
 		
+		std::cout << "Current traffic.size() = " << traffic.size() << std::endl;
 		for (int i = 0; i < traffic.size(); i++)
 		{
 			traffic[i].move((double)1/frame_per_sec, timestamp);
@@ -137,7 +137,6 @@ public:
     			double v2 = sin(yaw)*v;
 				estimate << traffic[i].ukf.x_[0], traffic[i].ukf.x_[1], v1, v2;
 				tools.estimations.push_back(estimate);
-	
 			}
 		}
 		viewer->addText("Accuracy - RMSE:", 30, 300, 20, 1, 1, 1, "rmse");

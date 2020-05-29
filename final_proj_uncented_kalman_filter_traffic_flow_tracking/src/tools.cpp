@@ -29,7 +29,7 @@ lmarker Tools::lidarSense(Car& car, pcl::visualization::PCLVisualizer::Ptr& view
 
     meas_package.raw_measurements_ << marker.x, marker.y;
     meas_package.timestamp_ = timestamp;
-	
+
 	// print indicator
 	std::cout << "process lidar measurement: \n";
 
@@ -88,7 +88,6 @@ void Tools::ukfResults(Car car, pcl::visualization::PCLVisualizer::Ptr& viewer, 
 			ct += dt;
 		}
 	}
-
 }
 
 VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
