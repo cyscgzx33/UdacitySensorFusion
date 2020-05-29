@@ -66,6 +66,12 @@ class UKF {
    */
   void PredictRadarMeasurement(Eigen::VectorXd* z_out, Eigen::MatrixXd* S_out, Eigen::MatrixXd* Z_sig);
 
+  /**
+   * Normalize state(2): phi to [-pi, pi]
+   * @param x The input/output vector to be modified for angle normalization
+   */
+  void normalizeAngle(Eigen::VectorXd& x);
+
   // initially set to false, set to true in first call of ProcessMeasurement
   bool is_initialized_;
 
