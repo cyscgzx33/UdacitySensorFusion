@@ -21,7 +21,7 @@ class Highway
 	// Set which cars to track with UKF
 	std::vector<bool> trackCars = {true,false,false};
 	// Visualize sensor measurements
-	bool visualize_lidar = true;
+	bool visualize_lidar = false;
 	bool visualize_radar = true;
 	bool visualize_pcd = false;
 	// Predict path in the future using UKF
@@ -46,7 +46,7 @@ class Highway
 		car1_instructions.push_back(a);
 		a = accuation(4.4*1e6, -2.0, 0.0);
 		car1_instructions.push_back(a);
-	
+
 		car1.setInstructions(car1_instructions);
 		if( trackCars[0] )
 		{

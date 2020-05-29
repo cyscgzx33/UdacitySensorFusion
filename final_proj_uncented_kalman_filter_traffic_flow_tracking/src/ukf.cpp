@@ -22,10 +22,10 @@ UKF::UKF() {
   P_ = MatrixXd(5, 5);
 
   // Process noise standard deviation longitudinal acceleration in m/s^2
-  std_a_ = 30;
+  std_a_ = 1.5;
 
   // Process noise standard deviation yaw acceleration in rad/s^2
-  std_yawdd_ = 30;
+  std_yawdd_ = 2.5;
 
   /**
    * DO NOT MODIFY measurement noise values below.
@@ -129,11 +129,11 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
       std::cout << "Initialized mean state values are:\n" << x_ << std::endl;
     }
 
-    P_ << 0.01, 0,    0,    0,       0,
-          0,    0.01, 0,    0,       0,
-          0,    0,    10,   0,       0,
-          0,    0,    0,    0.001,   0,
-          0,    0,    0,    0,       0.01;
+    P_ << 1,    0,    0,    0,       0,
+          0,    1,    0,    0,       0,
+          0,    0,    1,    0,       0,
+          0,    0,    0,    0.5,     0,
+          0,    0,    0,    0,       0.5;
 
     time_us_ = meas_package.timestamp_;
     is_initialized_ = true;
@@ -263,7 +263,7 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
   K = T * S.inverse();
 
   std::cout << "during UpdateRadar(): \n" << "S = " << S << std::endl;
-  std::cout << "during UpdateRadar(): \n" << "S.inverse = " << z << std::endl;
+  std::cout << "during UpdateRadar(): \n" << "S.inverse = " << S << std::endl;
   std::cout << "during UpdateRadar(): \n" << "K = " << K << std::endl;
 
   // update state mean and covariance matrix
@@ -404,9 +404,11 @@ void UKF::PredictMeanAndCovariance() {
   
   // create vector for predicted state
   VectorXd x = VectorXd(n_x_);
+  x.fill(0.0);
 
   // create covariance matrix for prediction
   MatrixXd P = MatrixXd(n_x_, n_x_);
+  P.fill(0.0);
 
   for (int i = 0; i < 2 * n_aug_ + 1; i++)
   {
@@ -451,12 +453,15 @@ void UKF::PredictRadarMeasurement(VectorXd* z_out, MatrixXd* S_out, MatrixXd* Z_
 
   // create matrix for sigma points in measurement space
   MatrixXd Zsig = MatrixXd(n_z, 2 * n_aug_ + 1);
+  Zsig.fill(0.0);
 
   // mean predicted measurement
   VectorXd z_pred = VectorXd(n_z);
+  z_pred.fill(0.0);
 
   // measurement covariance matrix S
   MatrixXd S = MatrixXd(n_z,n_z);
+  S.fill(0.0);
 
   for (int i = 0; i < 2 * n_aug_ + 1; i++)
   {
