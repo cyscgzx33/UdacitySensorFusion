@@ -56,6 +56,9 @@ UKF::UKF() {
    * Hint: one or more values initialized above might be wildly off...
    */
 
+  // initially set to false, set to true in first call of ProcessMeasurement
+  is_initialized_ = false;
+
   // State dimension
   n_x_ = 5;
 
@@ -65,7 +68,18 @@ UKF::UKF() {
   // Sigma point spreading parameter
   lambda_ = 3 - n_aug_;
 
+  // Lidar measurement matrix
+  H_ = MatrixXd(2, n_x_);
+  H_ << 1, 0, 0, 0, 0,
+        0, 1, 0, 0, 0;
+
+  // Lidar measurement noise covariance matrix
+  R_ = MatrixXd(2, 2);
+  R_ << std_laspx_ * std_laspx_, 0.0,
+        0.0, std_laspy_ * std_laspy_;
+
   // set vector for weights
+  weights_ = VectorXd(2*n_aug_+1);
   double weight_0 = lambda_ / (lambda_ + n_aug_);
   double weight = 0.5 / (lambda_ + n_aug_);
   weights_(0) = weight_0;
@@ -79,6 +93,8 @@ UKF::UKF() {
 
   // Process noise standard deviation yaw acceleration in rad/s^2
   std_yawdd_ = 0.2;
+
+  std::cout << "UKF constructor called!\n"; 
 }
 
 UKF::~UKF() {}
@@ -88,7 +104,30 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
    * TODO: Complete this function! Make sure you switch between lidar and radar
    * measurements.
    */
+  if (!is_initialized_) {
+    std::cout << "Uncented Kalman Filter (UKF) state initialization " << std::endl;
 
+    // set the state with the initial location and zero velocity, yaw & yaw rate
+    x_ << meas_package.raw_measurements_[0], 
+          meas_package.raw_measurements_[1], 
+          0.0, 
+          0.0,
+          0.0;
+
+    time_us_ = meas_package.timestamp_;
+    is_initialized_ = true;
+    return;
+  }
+
+  // compute the time elapsed between the current and previous measurements
+  // dt - expressed in seconds
+  float dt = (meas_package.timestamp_ - time_us_) / 1000000.0;
+  time_us_ = meas_package.timestamp_;
+
+  // UKF predict
+  Prediction(dt);
+
+  // UKF measurement update
   if (meas_package.sensor_type_ == MeasurementPackage::SensorType::LASER)
     UpdateLidar(meas_package);
   if (meas_package.sensor_type_ == MeasurementPackage::SensorType::RADAR)
@@ -101,6 +140,18 @@ void UKF::Prediction(double delta_t) {
    * Modify the state vector, x_. Predict sigma points, the state, 
    * and the state covariance matrix.
    */
+
+  // create sigma point matrix
+  MatrixXd Xsig_aug = MatrixXd(n_aug_, 2 * n_aug_ + 1);
+
+  // call the function to assign the sigma point matrix
+  AugmentedSigmaPoints(&Xsig_aug);
+
+  // update sigma point matrix Xsig_pred_
+  SigmaPointPrediction(&Xsig_aug);
+
+  // predict mean and covariance
+  PredictMeanAndCovariance();
 }
 
 void UKF::UpdateLidar(MeasurementPackage meas_package) {
@@ -110,6 +161,27 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
    * covariance, P_.
    * You can also calculate the lidar NIS, if desired.
    */
+
+  // set measurement dimension, lidar can measure px and py
+  int n_z = 2;
+
+  // create vector for measurement
+  VectorXd z = VectorXd(n_z);
+  z = meas_package.raw_measurements_;
+
+  VectorXd z_pred = H_ * x_;
+  VectorXd y = z - z_pred;
+  MatrixXd Ht = H_.transpose();
+  MatrixXd S = H_ * P_ * Ht + R_;
+  MatrixXd Si = S.inverse();
+  MatrixXd PHt = P_ * Ht;
+  MatrixXd K = PHt * Si;
+
+  //new estimate
+  x_ = x_ + (K * y);
+  long x_size = x_.size();
+  MatrixXd I = MatrixXd::Identity(x_size, x_size);
+  P_ = (I - K * H_) * P_;
 }
 
 void UKF::UpdateRadar(MeasurementPackage meas_package) {
@@ -144,7 +216,8 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
   // create matrix for predicted measurement covariance
   MatrixXd S = MatrixXd(n_z,n_z);
 
-  // call the function the assign the predicted measurement and measurement covariance
+  // call the function to assign the predicted measurement, measurement covariance
+  // and matrix with sigma points in measurement space
   PredictRadarMeasurement(&z_pred, &S, &Zsig);
 
   // create vector for incoming radar measurement
@@ -168,8 +241,8 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
   P -= K * S * K.transpose();
 
   // print result
-  std::cout << "Updated state x: " << std::endl << x << std::endl;
-  std::cout << "Updated state covariance P: " << std::endl << P << std::endl;
+  // std::cout << "Updated state x: " << std::endl << x << std::endl;
+  // std::cout << "Updated state covariance P: " << std::endl << P << std::endl;
 
   // write result
   x_ = x;
@@ -221,7 +294,7 @@ void UKF::AugmentedSigmaPoints(MatrixXd* Xsig_out) {
   }
 
   // print result
-  std::cout << "Xsig_aug = " << std::endl << Xsig_aug << std::endl;
+  // std::cout << "Xsig_aug = " << std::endl << Xsig_aug << std::endl;
 
   // write result
   *Xsig_out = Xsig_aug;
@@ -280,13 +353,13 @@ void UKF::SigmaPointPrediction(MatrixXd* Xsig_in) {
   }
 
   // print result
-  std::cout << "Xsig_pred = " << std::endl << Xsig_pred << std::endl;
+  // std::cout << "Xsig_pred = " << std::endl << Xsig_pred << std::endl;
 
   // write result
   Xsig_pred_ = Xsig_pred;
 }
 
-void UKF::PredictMeanAndCovariance(VectorXd* x_out, MatrixXd* P_out) {
+void UKF::PredictMeanAndCovariance() {
 
   // create example matrix with predicted sigma points
   MatrixXd Xsig_pred = MatrixXd(n_x_, 2 * n_aug_ + 1);
@@ -320,14 +393,14 @@ void UKF::PredictMeanAndCovariance(VectorXd* x_out, MatrixXd* P_out) {
   }
 
   // print result
-  std::cout << "Predicted state" << std::endl;
-  std::cout << x << std::endl;
-  std::cout << "Predicted covariance matrix" << std::endl;
-  std::cout << P << std::endl;
+  // std::cout << "Predicted state" << std::endl;
+  // std::cout << x << std::endl;
+  // std::cout << "Predicted covariance matrix" << std::endl;
+  // std::cout << P << std::endl;
 
   // write result
-  *x_out = x;
-  *P_out = P;
+  x_ = x;
+  P_ = P;
 }
 
 void UKF::PredictRadarMeasurement(VectorXd* z_out, MatrixXd* S_out, MatrixXd* Z_sig) {
@@ -344,7 +417,7 @@ void UKF::PredictRadarMeasurement(VectorXd* z_out, MatrixXd* S_out, MatrixXd* Z_
 
   // mean predicted measurement
   VectorXd z_pred = VectorXd(n_z);
-  
+
   // measurement covariance matrix S
   MatrixXd S = MatrixXd(n_z,n_z);
 
@@ -388,8 +461,8 @@ void UKF::PredictRadarMeasurement(VectorXd* z_out, MatrixXd* S_out, MatrixXd* Z_
   }
 
   // print result
-  std::cout << "z_pred: " << std::endl << z_pred << std::endl;
-  std::cout << "S: " << std::endl << S << std::endl;
+  // std::cout << "z_pred: " << std::endl << z_pred << std::endl;
+  // std::cout << "S: " << std::endl << S << std::endl;
 
   // write result
   *z_out = z_pred;

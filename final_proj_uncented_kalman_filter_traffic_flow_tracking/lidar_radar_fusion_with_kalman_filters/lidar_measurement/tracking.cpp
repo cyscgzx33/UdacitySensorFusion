@@ -22,7 +22,6 @@ Tracking::Tracking() {
             0, 0, 1000, 0,
             0, 0, 0, 1000;
 
-
   // measurement covariance
   kf_.R_ = MatrixXd(2, 2);
   kf_.R_ << 0.0225, 0,
@@ -93,7 +92,7 @@ void Tracking::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   //      with the most recent raw measurements_
   kf_.Update(measurement_pack.raw_measurements_);
 
-  
+
   cout << "x_= " << kf_.x_ << endl;
   cout << "P_= " << kf_.P_ << endl;
 }

@@ -282,7 +282,6 @@ void UKF::PredictMeanAndCovariance(VectorXd* x_out, MatrixXd* P_out) {
   // create covariance matrix for prediction
   MatrixXd P = MatrixXd(n_x, n_x);
 
-
   /**
    * Student part begin
    */
@@ -294,12 +293,12 @@ void UKF::PredictMeanAndCovariance(VectorXd* x_out, MatrixXd* P_out) {
     // predict state mean
     x += wi * Xsig_pred.col(i);
   }
-  
+
   for (int i = 0; i < 2 * n_aug + 1; i++)
   {
     // set weights
     double wi = i == 0 ? lambda / (lambda + n_aug) : 1 / (2*(lambda + n_aug));
-    
+
     // Useful check: if the phi stays in [-pi, pi]
     // angle normalization
     VectorXd x_diff = Xsig_pred.col(i) - x;
@@ -514,9 +513,6 @@ void UKF::UpdateState(VectorXd* x_out, MatrixXd* P_out) {
      5.9214,   // rho in m
      0.2187,   // phi in rad
      2.0062;   // rho_dot in m/s
-
-  // create matrix for cross correlation Tc
-  MatrixXd Tc = MatrixXd(n_x, n_z);
 
   /**
    * Student part begin

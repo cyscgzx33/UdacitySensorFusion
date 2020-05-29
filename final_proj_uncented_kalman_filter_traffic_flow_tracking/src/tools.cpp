@@ -29,6 +29,9 @@ lmarker Tools::lidarSense(Car& car, pcl::visualization::PCLVisualizer::Ptr& view
 
     meas_package.raw_measurements_ << marker.x, marker.y;
     meas_package.timestamp_ = timestamp;
+	
+	// print indicator
+	std::cout << "process lidar measurement: \n";
 
     car.ukf.ProcessMeasurement(meas_package);
 
@@ -54,6 +57,9 @@ rmarker Tools::radarSense(Car& car, Car ego, pcl::visualization::PCLVisualizer::
     meas_package.raw_measurements_ = VectorXd(3);
     meas_package.raw_measurements_ << marker.rho, marker.phi, marker.rho_dot;
     meas_package.timestamp_ = timestamp;
+
+	// print indicator
+	std::cout << "process radar measurement: \n";
 
     car.ukf.ProcessMeasurement(meas_package);
 

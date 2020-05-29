@@ -16,23 +16,22 @@ public:
 	std::vector<double> rmseThreshold = {0.30,0.16,0.95,0.70};
 	std::vector<double> rmseFailLog = {0.0,0.0,0.0,0.0};
 	Lidar* lidar;
-	
+
 	// Parameters 
 	// --------------------------------
 	// Set which cars to track with UKF
-	std::vector<bool> trackCars = {true,true,true};
+	std::vector<bool> trackCars = {true,false,false};
 	// Visualize sensor measurements
 	bool visualize_lidar = true;
 	bool visualize_radar = true;
 	bool visualize_pcd = false;
 	// Predict path in the future using UKF
-	double projectedTime = 0;
-	int projectedSteps = 0;
+	double projectedTime = 2;
+	int projectedSteps = 6;
 	// --------------------------------
 
 	Highway(pcl::visualization::PCLVisualizer::Ptr& viewer)
 	{
-
 		tools = Tools();
 	
 		egoCar = Car(Vect3(0, 0, 0), Vect3(4, 2, 2), Color(0, 1, 0), 0, 0, 2, "egoCar");
@@ -107,13 +106,11 @@ public:
 	
 	void stepHighway(double egoVelocity, long long timestamp, int frame_per_sec, pcl::visualization::PCLVisualizer::Ptr& viewer)
 	{
-
 		if(visualize_pcd)
 		{
 			pcl::PointCloud<pcl::PointXYZ>::Ptr trafficCloud = tools.loadPcd("../src/sensors/data/pcd/highway_"+std::to_string(timestamp)+".pcd");
 			renderPointCloud(viewer, trafficCloud, "trafficCloud", Color((float)184/256,(float)223/256,(float)252/256));
 		}
-		
 
 		// render highway environment with poles
 		renderHighway(egoVelocity*timestamp/1e6, viewer);
@@ -152,7 +149,6 @@ public:
 
 		if(timestamp > 1.0e6)
 		{
-
 			if(rmse[0] > rmseThreshold[0])
 			{
 				rmseFailLog[0] = rmse[0];
@@ -186,7 +182,5 @@ public:
 			if(rmseFailLog[3] > 0)
 				viewer->addText("Vy: "+std::to_string(rmseFailLog[3]), 30, 50, 20, 1, 0, 0, "rmse_fail_vy");
 		}
-		
 	}
-	
 };

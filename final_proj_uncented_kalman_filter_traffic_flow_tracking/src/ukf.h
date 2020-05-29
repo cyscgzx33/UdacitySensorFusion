@@ -45,20 +45,18 @@ class UKF {
    * Augement sigma points to include prediction error
    * @param Xsig_out The output augmented sigma point x signal matrix
    */
-  void AugmentedSigmaPoints(MatrixXd* Xsig_out);
+  void AugmentedSigmaPoints(Eigen::MatrixXd* Xsig_out);
 
   /**
    * Predict sigma points using the motion model
    * @param Xsig_in The input augmened sigma point x signal matrix
    */
-  void SigmaPointPrediction(MatrixXd* Xsig_in);
+  void SigmaPointPrediction(Eigen::MatrixXd* Xsig_in);
 
   /**
    * Predict mean and covariance
-   * @param x_out The output predicted mean of sigma point x signal vector
-   * @param P_out The output predicted covariance of sigma point x signal matrix
    */
-  void PredictMeanAndCovariance(VectorXd* x_out, MatrixXd* P_out);
+  void PredictMeanAndCovariance();
 
   /**
    * Predict radar mesurement
@@ -66,7 +64,7 @@ class UKF {
    * @param S_out The output innovation covariance matrix S signal matrix
    * @param Z_sig The output matrix with sigma points in measurement space
    */
-  void PredictRadarMeasurement(VectorXd* z_out, MatrixXd* S_out, MatrixXd* Z_sig);
+  void PredictRadarMeasurement(Eigen::VectorXd* z_out, Eigen::MatrixXd* S_out, Eigen::MatrixXd* Z_sig);
 
   // initially set to false, set to true in first call of ProcessMeasurement
   bool is_initialized_;
@@ -82,6 +80,12 @@ class UKF {
 
   // state covariance matrix
   Eigen::MatrixXd P_;
+
+  // Lidar measurement matrix
+  Eigen::MatrixXd H_;
+
+  // Lidar measurement noise covariance matrix
+  Eigen::MatrixXd R_;
 
   // predicted sigma points matrix
   Eigen::MatrixXd Xsig_pred_;
