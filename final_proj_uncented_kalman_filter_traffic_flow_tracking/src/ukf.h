@@ -64,8 +64,9 @@ class UKF {
    * Predict radar mesurement
    * @param z_out The output predicted measurement vector z signal vector
    * @param S_out The output innovation covariance matrix S signal matrix
+   * @param Z_sig The output matrix with sigma points in measurement space
    */
-  void PredictRadarMeasurement(VectorXd* z_out, MatrixXd* S_out);
+  void PredictRadarMeasurement(VectorXd* z_out, MatrixXd* S_out, MatrixXd* Z_sig);
 
   // initially set to false, set to true in first call of ProcessMeasurement
   bool is_initialized_;
