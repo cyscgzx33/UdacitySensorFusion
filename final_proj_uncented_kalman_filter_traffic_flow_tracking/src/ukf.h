@@ -55,10 +55,17 @@ class UKF {
 
   /**
    * Predict mean and covariance
-   * @param x_out The output predicted mean of sigma point x signal
-   * @param P_out The output predicted covariance of sigma point x signal
+   * @param x_out The output predicted mean of sigma point x signal vector
+   * @param P_out The output predicted covariance of sigma point x signal matrix
    */
   void PredictMeanAndCovariance(VectorXd* x_out, MatrixXd* P_out);
+
+  /**
+   * Predict radar mesurement
+   * @param z_out The output predicted measurement vector z signal vector
+   * @param S_out The output innovation covariance matrix S signal matrix
+   */
+  void PredictRadarMeasurement(VectorXd* z_out, MatrixXd* S_out);
 
   // initially set to false, set to true in first call of ProcessMeasurement
   bool is_initialized_;

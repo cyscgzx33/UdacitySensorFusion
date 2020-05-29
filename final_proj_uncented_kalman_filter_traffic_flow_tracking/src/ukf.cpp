@@ -64,6 +64,15 @@ UKF::UKF() {
   // Sigma point spreading parameter
   lambda_ = 3 - n_aug_;
 
+  // set vector for weights
+  double weight_0 = lambda_ / (lambda_ + n_aug_);
+  double weight = 0.5 / (lambda_ + n_aug_);
+  weights_(0) = weight_0;
+
+  for (int i = 1; i < 2 * n_aug_ + 1; i++) {  
+    weights_(i) = weight;
+  }
+
   // Process noise standard deviation longitudinal acceleration in m/s^2
   std_a_ = 0.2;
 
@@ -263,5 +272,71 @@ void UKF::PredictMeanAndCovariance(VectorXd* x_out, MatrixXd* P_out) {
 
   // write result
   *x_out = x;
-  *P_out = P;  
+  *P_out = P;
+}
+
+void UKF::PredictRadarMeasurement(VectorXd* z_out, MatrixXd* S_out) {
+
+  // set measurement dimension, radar can measure r, phi, and r_dot
+  int n_z = 3;
+
+  // create example matrix with predicted sigma points
+  MatrixXd Xsig_pred = MatrixXd(n_x_, 2 * n_aug_ + 1);
+  Xsig_pred = Xsig_pred_;
+
+  // create matrix for sigma points in measurement space
+  MatrixXd Zsig = MatrixXd(n_z, 2 * n_aug_ + 1);
+
+  // mean predicted measurement
+  VectorXd z_pred = VectorXd(n_z);
+  
+  // measurement covariance matrix S
+  MatrixXd S = MatrixXd(n_z,n_z);
+
+  for (int i = 0; i < 2 * n_aug_ + 1; i++)
+  {
+    VectorXd z_tmp = VectorXd(n_z);
+    VectorXd x_pred = Xsig_pred.col(i);
+    double px       =  x_pred(0);
+    double py       =  x_pred(1);
+    double v        =  x_pred(2);
+    double psi      =  x_pred(3);
+    double psi_dot  =  x_pred(4);
+    // transform sigma points into measurement space
+    z_tmp(0) = sqrt(pow(px, 2) + pow(py, 2));
+    z_tmp(1) = atan2(py, px);
+    z_tmp(2) = (px * cos(psi) * v + py * sin(psi) * v ) / z_tmp(0);
+
+    // normalize the angle phi (z_tmp(1))
+    while (z_tmp(1) > M_PI) z_tmp(1) -= 2 * M_PI;
+    while (z_tmp(1) < -M_PI) z_tmp(1) += 2 * M_PI;
+
+    // calculate mean predicted measurement
+    z_pred += weights_(i) * z_tmp;
+
+    // store info in Zsig
+    Zsig.col(i) = z_tmp;
+  }
+
+  // predicted covariance matrix
+  MatrixXd R = MatrixXd(3, 3);
+  R.fill(0.0);
+  R(0, 0) = std_radr_ * std_radr_;
+  R(1, 1) = std_radphi_ * std_radphi_;
+  R(2, 2) = std_radrd_ * std_radrd_;
+  S += R;
+
+  for (int i = 0; i < 2 * n_aug_ + 1; i++)
+  {
+    // calculate innovation covariance matrix S
+    S += weights_(i) * (Zsig.col(i) - z_pred) * (Zsig.col(i) - z_pred).transpose();
+  }
+
+  // print result
+  std::cout << "z_pred: " << std::endl << z_pred << std::endl;
+  std::cout << "S: " << std::endl << S << std::endl;
+
+  // write result
+  *z_out = z_pred;
+  *S_out = S;
 }
