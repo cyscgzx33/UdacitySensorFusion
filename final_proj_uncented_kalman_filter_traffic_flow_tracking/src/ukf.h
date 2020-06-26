@@ -50,8 +50,9 @@ class UKF {
   /**
    * Predict sigma points using the motion model
    * @param Xsig_in The input augmened sigma point x signal matrix
+   * @param delta_t The time difference in seconds
    */
-  void SigmaPointPrediction(Eigen::MatrixXd* Xsig_in);
+  void SigmaPointPrediction(Eigen::MatrixXd* Xsig_in, double delta_t);
 
   /**
    * Predict mean and covariance

@@ -21,22 +21,22 @@ class Highway
 	// Set which cars to track with UKF
 	std::vector<bool> trackCars = {true,false,false};
 	// Visualize sensor measurements
-	bool visualize_lidar = false;
+	bool visualize_lidar = true;
 	bool visualize_radar = true;
 	bool visualize_pcd = false;
 	// Predict path in the future using UKF
-	double projectedTime = 2; // default: 2
-	int projectedSteps = 6;   // default: 6
+	double projectedTime = 2; // default: 2, 3
+	int projectedSteps = 6;   // default: 6, 8
 	// --------------------------------
 
 	Highway(pcl::visualization::PCLVisualizer::Ptr& viewer)
 	{
 		tools = Tools();
-	
+
 		egoCar = Car(Vect3(0, 0, 0), Vect3(4, 2, 2), Color(0, 1, 0), 0, 0, 2, "egoCar");
-		
+
 		Car car1(Vect3(-10, 4, 0), Vect3(4, 2, 2), Color(0, 0, 1), 5, 0, 2, "car1");
-		
+
 		std::vector<accuation> car1_instructions;
 		accuation a = accuation(0.5*1e6, 0.5, 0.0);
 		car1_instructions.push_back(a);
@@ -54,7 +54,7 @@ class Highway
 			car1.setUKF(ukf1);
 		}
 		traffic.push_back(car1);
-		
+
 		Car car2(Vect3(25, -4, 0), Vect3(4, 2, 2), Color(0, 0, 1), -6, 0, 2, "car2");
 		std::vector<accuation> car2_instructions;
 		a = accuation(4.0*1e6, 3.0, 0.0);
@@ -68,7 +68,7 @@ class Highway
 			car2.setUKF(ukf2);
 		}
 		traffic.push_back(car2);
-	
+
 		Car car3(Vect3(-12, 0, 0), Vect3(4, 2, 2), Color(0, 0, 1), 1, 0, 2, "car3");
 		std::vector<accuation> car3_instructions;
 		a = accuation(0.5*1e6, 2.0, 1.0);
@@ -94,7 +94,7 @@ class Highway
 		traffic.push_back(car3);
 
 		lidar = new Lidar(traffic,0);
-	
+
 		// render environment
 		renderHighway(0,viewer);
 		egoCar.render(viewer);
@@ -102,7 +102,7 @@ class Highway
 		car2.render(viewer);
 		car3.render(viewer);
 	}
-	
+
 	void stepHighway(double egoVelocity, long long timestamp, int frame_per_sec, pcl::visualization::PCLVisualizer::Ptr& viewer)
 	{
 		if(visualize_pcd)
@@ -114,7 +114,7 @@ class Highway
 		// render highway environment with poles
 		renderHighway(egoVelocity*timestamp/1e6, viewer);
 		egoCar.render(viewer);
-		
+
 		// std::cout << "Current traffic.size() = " << traffic.size() << std::endl;
 		for (int i = 0; i < traffic.size(); i++)
 		{
@@ -181,5 +181,10 @@ class Highway
 			if(rmseFailLog[3] > 0)
 				viewer->addText("Vy: "+std::to_string(rmseFailLog[3]), 30, 50, 20, 1, 0, 0, "rmse_fail_vy");
 		}
+
+		std::cout << " X: "+std::to_string(rmse[0]) << std::endl;
+		std::cout << " Y: "+std::to_string(rmse[1]) << std::endl;
+		std::cout << "Vx: "+std::to_string(rmse[2]) << std::endl;
+		std::cout << "Vy: "+std::to_string(rmse[3]) << std::endl;
 	}
 };

@@ -70,7 +70,7 @@ void UKF::GenerateSigmaPoints(MatrixXd* Xsig_out) {
   /**
    * Student part end
    */
-  
+
   // print result
   // std::cout << "Xsig = " << std::endl << Xsig << std::endl;
 
