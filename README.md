@@ -44,5 +44,20 @@ Course metrials and projects of Udacity Sensor Fusion Nanodegree Program.
 | --- | --- |
 | ![combinations camera](camera_object_detection/Final_Term_3D_Object_Tracking/media/camera_ttc_comparison_differen_combinations.png) | ![combinations lidar](camera_object_detection/Final_Term_3D_Object_Tracking/media/lidar_ttc_comparison_differen_combinations.png) |
 ---
-## Radar
-* On-going
+## Radar Target Generation and Detection
+| Source / Input (from 2D `FFT`) | Result / Output of 2D `CFAR` |
+| ---  | ---  |
+| ![FFT 2D](radar_object_detection/media/result_2d_fft.png) | ![CFAR 2D](radar_object_detection/media/result_2d_cfar.png)   |
+
+* 2D CFAR Algorithm
+    * The 2D CFAR algorithm takes the 2D FFT result, i.e., the complete Range Dopper Map (the variable `RDM` in the script), as its input 
+    * then the algorithm applies sliding window through the input, and during each iteration it conducts averaging of surrounding cell values of the interested cell (i.e., the **Cell Under Test (CUT)**), to take as threshold of the CUT.
+    * Parameter Selection: to achieve an ideal performance of 2D CFAR, the following paramters are set:
+
+| `Tr` | `Td` | `Gr` | `Gd` |`SNR` |
+| ---  | ---  | ---  | ---  | ---  |
+| 12   | 14   | 6    | 8    | 5    |
+
+---
+## UKF Highway Object Tracking
+<img src="final_proj_uncented_kalman_filter_traffic_flow_tracking/media/ukf_highway_tracked.gif" width="840" height="480" />
