@@ -1,4 +1,4 @@
-# Radar Target Generation nad Detection
+# Radar Target Generation and Detection
 
 ## 2D CFAR Evaluation
 | Source / Input (from 2D `FFT`) | Result / Output of 2D `CFAR` |
